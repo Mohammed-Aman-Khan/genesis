@@ -1,0 +1,47 @@
+{
+  "name": "@genesis/cli",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "genesis": "dist/index.js"
+  },
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --dts --format esm --minify",
+    "clean": "rm -rf dist",
+    "lint": "eslint src --ext .ts",
+    "test": "vitest",
+    "build:binary": "pkg dist/index.js --out-path bin"
+  },
+  "dependencies": {
+    "@genesis/core": "workspace:*",
+    "commander": "14.0.2",
+    "inquirer": "13.0.1"
+  },
+  "devDependencies": {
+    "typescript": "latest",
+    "tsup": "latest",
+    "eslint": "latest",
+    "@types/node": "latest",
+    "vitest": "latest",
+    "pkg": "latest"
+  },
+  "pkg": {
+    "scripts": "dist/**/*.js",
+    "targets": [
+      "node18-macos-x64",
+      "node18-linux-x64",
+      "node18-win-x64"
+    ],
+    "outputPath": "bin"
+  }
+}
