@@ -20,7 +20,7 @@
     },
     "docs:build": {
       "dependsOn": ["^build"],
-      "outputs": ["docs/.vitepress/dist/**"]
+      "outputs": ["apps/docs/.vitepress/dist/**"]
     },
     "docs:preview": {
       "cache": false,
