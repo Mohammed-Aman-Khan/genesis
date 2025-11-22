@@ -121,7 +121,8 @@ tools:
 
 ### TypeScript Config
 ```typescript
-import { defineConfig, node } from "@genesis/core";
+import { defineConfig } from "@genesis/core";
+import { node } from "@genesis/plugins";
 
 export default defineConfig({
   tools: [
