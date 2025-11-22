@@ -2,6 +2,7 @@ import {
   type GenesisPluginCategory,
   type GenesisPluginInstance,
 } from "../config/schema.js";
+import { type Logger } from "../utils/logger.js";
 
 export interface DetectResult {
   ok: boolean;
@@ -22,6 +23,7 @@ export interface ValidateResult {
 export interface GenesisPluginContext {
   cwd: string;
   env: NodeJS.ProcessEnv;
+  logger: Logger;
 }
 
 export interface PluginRuntime<TOptions = unknown> {

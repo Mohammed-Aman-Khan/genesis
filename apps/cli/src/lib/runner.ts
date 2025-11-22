@@ -66,6 +66,7 @@ export async function runApply(context: RunnerContext): Promise<void> {
   const summaries: ApplySummary[] = await coreRunApply(graph, {
     cwd: context.cwd,
     env: process.env,
+    logger,
   });
   const rows = summaries.map((summary) => ({
     plugin: summary.id,
@@ -81,10 +82,12 @@ export async function runDoctor(context: RunnerContext): Promise<void> {
   const detectSummaries: DetectSummary[] = await coreRunDetect(graph, {
     cwd: context.cwd,
     env: process.env,
+    logger,
   });
   const validateSummaries: ValidateSummary[] = await coreRunValidate(graph, {
     cwd: context.cwd,
     env: process.env,
+    logger,
   });
   const rows = detectSummaries.map((detect) => {
     const validate = validateSummaries.find((entry) => entry.id === detect.id);
@@ -110,6 +113,7 @@ export async function runDiff(context: RunnerContext): Promise<void> {
   const summaries: DetectSummary[] = await coreRunDiff(graph, {
     cwd: context.cwd,
     env: process.env,
+    logger,
   });
   const rows = summaries.map((summary) => ({
     plugin: summary.id,
@@ -125,6 +129,7 @@ export async function runValidate(context: RunnerContext): Promise<void> {
   const summaries: ValidateSummary[] = await coreRunValidate(graph, {
     cwd: context.cwd,
     env: process.env,
+    logger,
   });
   const rows = summaries.map((summary) => ({
     plugin: summary.id,

@@ -1,0 +1,14 @@
+# Example Genesis configuration using NVM for Node.js installation
+# This demonstrates the new use_nvm flag (default: true)
+
+tools:
+  # Install Node.js 20 using NVM (default behavior)
+  - type: node
+    version: "20"
+    # use_nvm: true  # This is the default, so it's optional
+
+  # Or explicitly disable NVM and use standalone installation
+  # - type: node
+  #   version: "20"
+  #   use_nvm: false  # Will attempt standalone installation (not yet implemented)
+
