@@ -5,10 +5,14 @@
   "scripts": {
     "build": "turbo run build",
     "lint": "turbo run lint",
-    "clean": "turbo run clean"
+    "clean": "turbo run clean",
+    "docs:dev": "cd apps && vitepress dev docs",
+    "docs:build": "cd apps && vitepress build docs",
+    "docs:preview": "cd apps && vitepress preview docs"
   },
   "devDependencies": {
-    "turbo": "latest"
+    "turbo": "latest",
+    "vitepress": "^2.0.0-alpha.14"
   },
   "workspaces": [
     "apps/*",
