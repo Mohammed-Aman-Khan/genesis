@@ -99,6 +99,35 @@ export async function runApply(
   context: GenesisPluginContext
 ): Promise<ApplySummary[]> {
   const result: ApplySummary[] = [];
+
+  // Phase 1: Register system-level tasks
+  context.logger.debug("Phase 1: Registering system-level tasks...");
+  for (const node of nodes) {
+    if (node.plugin.registerTasks) {
+      await node.plugin.registerTasks({
+        instance: node.instance,
+        options: node.instance.options,
+        context,
+      });
+    }
+  }
+
+  // Phase 2: Execute all registered system tasks (deduplicated)
+  context.logger.debug("Phase 2: Executing system tasks...");
+  const taskResults = await context.taskRegistry.executeAll();
+
+  // Check if any critical tasks failed
+  const failedTasks = Array.from(taskResults.entries()).filter(
+    ([_, result]) => !result.ok
+  );
+  if (failedTasks.length > 0) {
+    context.logger.warn(
+      `${failedTasks.length} system task(s) failed. Plugin installation may be affected.`
+    );
+  }
+
+  // Phase 3: Execute plugin apply methods
+  context.logger.debug("Phase 3: Executing plugin apply methods...");
   for (const node of nodes) {
     if (!node.plugin.apply) {
       result.push({
@@ -122,6 +151,7 @@ export async function runApply(
       details: applyResult.details,
     });
   }
+
   return result;
 }
 

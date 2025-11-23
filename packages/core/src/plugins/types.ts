@@ -3,6 +3,7 @@ import {
   type GenesisPluginInstance,
 } from "../config/schema.js";
 import { type Logger } from "../utils/logger.js";
+import { type TaskRegistry } from "../execution/task-registry.js";
 
 export interface DetectResult {
   ok: boolean;
@@ -24,6 +25,11 @@ export interface GenesisPluginContext {
   cwd: string;
   env: NodeJS.ProcessEnv;
   logger: Logger;
+  /**
+   * Task registry for deduplicating system-level operations
+   * Plugins can register tasks that should only run once per Genesis execution
+   */
+  taskRegistry: TaskRegistry;
 }
 
 export interface PluginRuntime<TOptions = unknown> {
@@ -37,6 +43,12 @@ export interface GenesisPlugin<TOptions = unknown> {
   category: GenesisPluginCategory;
   dependsOn?: string[];
   detect?(runtime: PluginRuntime<TOptions>): Promise<DetectResult>;
+  /**
+   * Optional: Register system-level tasks (e.g., package manager updates, system package installations)
+   * These tasks will be deduplicated and executed before the apply phase
+   * Use this to register prerequisites that need to be installed at the system level
+   */
+  registerTasks?(runtime: PluginRuntime<TOptions>): Promise<void>;
   apply?(runtime: PluginRuntime<TOptions>): Promise<ApplyResult>;
   validate?(runtime: PluginRuntime<TOptions>): Promise<ValidateResult>;
 }
