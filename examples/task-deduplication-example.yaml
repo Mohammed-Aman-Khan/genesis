@@ -1,0 +1,34 @@
+# Example: Task Deduplication
+#
+# This example demonstrates how Genesis deduplicates system-level tasks
+# when multiple plugins require the same operations.
+#
+# Both Node.js and Python plugins will need to:
+# 1. Update the package manager (apt/brew/choco)
+# 2. Install system dependencies
+#
+# Without deduplication, "apt-get update" would run twice.
+# With Genesis's task registry, it runs only once!
+
+tools:
+  - type: node
+    version: "20"
+    use_nvm: true
+
+languages:
+  - type: python
+    version: "3.11"
+
+# Expected execution flow:
+#
+# Phase 1: Plugin Execution
+#   - Node plugin registers: apt-update, apt-install:curl
+#   - Python plugin registers: apt-update, apt-install:python3.11
+#
+# Phase 2: Task Execution (deduplicated)
+#   - apt-update (runs ONCE, not twice!)
+#   - apt-install:curl
+#   - apt-install:python3.11
+#
+# Result: Faster, more efficient installation!
+
