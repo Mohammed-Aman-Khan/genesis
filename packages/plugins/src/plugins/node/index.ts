@@ -4,6 +4,9 @@ import {
   type PluginRuntime,
   runCommand,
   getPlatform,
+  createPackageManagerUpdateTask,
+  createPackageInstallTask,
+  createCommandCheckTask,
 } from "@genesis/core";
 import os from "node:os";
 import path from "node:path";
@@ -96,7 +99,7 @@ async function isNvmAvailable(
 }
 
 /**
- * Install NVM on macOS/Linux
+ * Install NVM on macOS/Linux using the official install script
  */
 async function installNvm(
   runtime: PluginRuntime<NodeOptions>
@@ -119,7 +122,7 @@ async function installNvm(
 
   logger.debug(`Downloading NVM install script from ${installUrl}`);
 
-  // Download and run the install script
+  // Download and run the install script (curl should be available from registerTasks phase)
   const result = await runCommand(
     "bash",
     ["-c", `curl -o- ${installUrl} | bash`],
@@ -279,6 +282,42 @@ export function createPlugin(
     category: instance.category,
     async detect(runtime) {
       return detectNode(runtime);
+    },
+    async registerTasks(runtime) {
+      const { taskRegistry, logger } = runtime.context;
+      const { use_nvm } = runtime.options;
+      const platform = getPlatform();
+
+      // Skip task registration for Windows (manual installation required)
+      if (platform === "windows") {
+        return;
+      }
+
+      // If using NVM, we need curl to download the NVM install script
+      if (use_nvm) {
+        logger.debug(
+          "Registering system tasks for NVM installation prerequisites"
+        );
+
+        // Register package manager update (will be deduplicated across plugins)
+        const updateTask = createPackageManagerUpdateTask(
+          runtime.context.cwd,
+          runtime.context.env
+        );
+        taskRegistry.register(updateTask);
+
+        // Register curl installation (will be deduplicated if other plugins need it)
+        const curlTask = createPackageInstallTask(
+          "curl",
+          runtime.context.cwd,
+          runtime.context.env
+        );
+        taskRegistry.register(curlTask);
+
+        logger.debug(
+          "System tasks registered: package manager update, curl installation"
+        );
+      }
     },
     async apply(runtime) {
       const { logger } = runtime.context;

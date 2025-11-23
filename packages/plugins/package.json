@@ -13,10 +13,14 @@
     "./node": {
       "import": "./dist/plugins/node/index.js",
       "types": "./dist/plugins/node/index.d.ts"
+    },
+    "./python": {
+      "import": "./dist/plugins/python/index.js",
+      "types": "./dist/plugins/python/index.d.ts"
     }
   },
   "scripts": {
-    "build": "tsup src/index.ts src/plugins/node/index.ts --dts --format esm --minify",
+    "build": "tsup src/index.ts src/plugins/node/index.ts src/plugins/python/index.ts --dts --format esm --minify",
     "clean": "rm -rf dist",
     "lint": "eslint src --ext .ts",
     "test": "vitest"
