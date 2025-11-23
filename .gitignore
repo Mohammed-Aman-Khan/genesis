@@ -4,4 +4,5 @@ dist
 bin
 bun.lockb
 .vscode
-.vitepress
+**/.vitepress/dist
+**/.vitepress/cache
