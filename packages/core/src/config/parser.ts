@@ -28,6 +28,7 @@ const yamlPluginDefaults: Record<
   { module: string; category: GenesisPluginCategory }
 > = {
   node: { module: "@genesis/plugins/node", category: "tool" },
+  python: { module: "@genesis/plugins/python", category: "language" },
 };
 
 function yamlEntryToInstance(entry: YamlPluginEntry): GenesisPluginInstance {

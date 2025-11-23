@@ -10,3 +10,5 @@ export * from "./os/platform.js";
 export * from "./os/shell.js";
 export * from "./env/vars.js";
 export * from "./env/path-editor.js";
+export * from "./execution/task-registry.js";
+export * from "./execution/system-tasks.js";
