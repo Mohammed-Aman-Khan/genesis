@@ -52,6 +52,11 @@ The Node.js plugin automatically installs and configures Node.js on your system.
   - Color-coded output
   - Detailed progress information
 
+- ✅ **Optimized System Operations**
+  - Task registry for deduplication
+  - System dependencies installed once across all plugins
+  - Three-phase execution model
+
 ---
 
 ## Installation Methods
@@ -203,20 +208,47 @@ tools:
 
 ## How It Works
 
-### Detection Phase
+The Node.js plugin uses Genesis's **three-phase execution model** for optimal performance:
+
+### Phase 1: Task Registration
+
+The plugin registers system-level prerequisites that need to be installed before NVM can be used:
+
+**macOS/Linux with NVM:**
+1. Registers package manager update task (e.g., `apt-get update`)
+2. Registers `curl` installation task (needed to download NVM install script)
+
+**Windows or Standalone:**
+- No system tasks registered (manual installation or direct download)
+
+**Benefits:**
+- System tasks are deduplicated across all plugins
+- If multiple plugins need `curl`, it's only installed once
+- Package manager updates run only once, not per plugin
+
+### Phase 2: System Task Execution
+
+Genesis executes all registered system tasks (deduplicated):
+1. Package manager update runs once
+2. System packages (like `curl`) are installed
+3. All plugins' system dependencies are now available
+
+### Phase 3: Plugin Installation
+
+The plugin performs its specific installation work:
+
+#### Detection Check
 
 1. Checks if `node` command is available
 2. Runs `node --version` to get installed version
 3. Compares installed version with requested version
-4. Returns detection result
-
-### Apply Phase
+4. Skips installation if already correct
 
 #### With NVM (`use_nvm: true`)
 
 **macOS/Linux:**
 1. Check if NVM is installed
-2. If not, download and install NVM
+2. If not, download and install NVM (using `curl` from Phase 2)
 3. Source NVM in current shell
 4. Install Node.js: `nvm install <version>`
 5. Set as default: `nvm alias default <version>`
@@ -235,7 +267,7 @@ tools:
 2. Run installer
 3. Verify installation
 
-### Validation Phase
+### Phase 4: Validation
 
 1. Reuses detection logic
 2. Verifies Node.js is installed and correct version

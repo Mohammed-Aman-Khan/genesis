@@ -13,6 +13,7 @@ This package provides the foundational infrastructure for Genesis, including con
 - [Core Modules](#core-modules)
   - [Configuration](#configuration)
   - [Plugin System](#plugin-system)
+  - [Task Registry & Deduplication](#task-registry--deduplication)
   - [Platform Utilities](#platform-utilities)
   - [File System](#file-system)
   - [Environment Management](#environment-management)
@@ -30,6 +31,8 @@ This package provides the foundational infrastructure for Genesis, including con
 
 - **Configuration Management**: Parse, validate, and load YAML/TypeScript configs
 - **Plugin System**: Define, load, and execute plugins with dependency resolution
+- **Task Registry & Deduplication**: Eliminate redundant system operations across plugins
+- **Three-Phase Execution**: Register tasks → Execute system tasks → Run plugin installations
 - **Platform Detection**: Cross-platform utilities for macOS, Linux, and Windows
 - **Shell Execution**: Safe command execution with proper error handling
 - **File System Utilities**: Download files, manage paths
@@ -132,6 +135,7 @@ interface GenesisPlugin<TOptions = unknown> {
   category: GenesisPluginCategory;
   dependsOn?: string[];
   detect?(runtime: PluginRuntime<TOptions>): Promise<DetectResult>;
+  registerTasks?(runtime: PluginRuntime<TOptions>): Promise<void>;  // NEW!
   apply?(runtime: PluginRuntime<TOptions>): Promise<ApplyResult>;
   validate?(runtime: PluginRuntime<TOptions>): Promise<ValidateResult>;
 }
@@ -147,10 +151,17 @@ interface GenesisPluginContext {
   cwd: string;
   env: NodeJS.ProcessEnv;
   logger: Logger;
+  taskRegistry: TaskRegistry;  // NEW!
 }
 ```
 
 #### Plugin Execution
+
+Genesis uses a **three-phase execution model** to optimize system operations:
+
+**Phase 1: Task Registration** - Plugins register system-level prerequisites
+**Phase 2: Task Execution** - System tasks execute once (deduplicated)
+**Phase 3: Plugin Installation** - Plugins perform their specific installation work
 
 ```typescript
 import {
@@ -161,6 +172,7 @@ import {
   runApply,
   runValidate,
   runDiff,
+  TaskRegistry,
 } from "@genesis/core";
 
 // Collect all plugin instances from config
@@ -172,12 +184,132 @@ const plugins = await loadPlugins(instances);
 // Build dependency graph
 const graph = buildPluginGraph(plugins);
 
+// Create task registry for deduplication
+const taskRegistry = new TaskRegistry(logger);
+
+// Create context with task registry
+const context = {
+  cwd: process.cwd(),
+  env: process.env,
+  logger,
+  taskRegistry,
+};
+
 // Execute plugin methods
 const detectResults = await runDetect(graph, context);
-const applyResults = await runApply(graph, context);
+const applyResults = await runApply(graph, context);  // Three-phase execution!
 const validateResults = await runValidate(graph, context);
 const diffResults = await runDiff(graph, context);
 ```
+
+### Task Registry & Deduplication
+
+Located in `src/execution/`, provides task deduplication and batching.
+
+#### Why Task Registry?
+
+**Problem**: When installing multiple plugins (e.g., Node.js and Python), each plugin would independently run `apt-get update`, causing the same command to execute multiple times unnecessarily.
+
+**Solution**: The Task Registry deduplicates system-level operations across all plugins, running each unique task only once.
+
+#### Task Registry
+
+```typescript
+import { TaskRegistry } from "@genesis/core";
+
+const taskRegistry = new TaskRegistry(logger);
+
+// Register tasks (will be deduplicated by ID)
+taskRegistry.register({
+  id: "linux:package-manager:apt-update",
+  description: "Update APT package index",
+  executor: async () => {
+    await runCommand("sudo", ["apt-get", "update"], { cwd, env });
+  },
+  priority: 100,
+});
+
+// Execute all registered tasks (deduplicated)
+const results = await taskRegistry.executeAll();
+```
+
+#### System Task Helpers
+
+Pre-built helpers for common system operations:
+
+```typescript
+import {
+  createPackageManagerUpdateTask,
+  createPackageInstallTask,
+  createCommandCheckTask,
+  createCustomTask,
+} from "@genesis/core";
+
+// Package manager update (deduplicated across plugins)
+const updateTask = createPackageManagerUpdateTask(cwd, env);
+taskRegistry.register(updateTask);
+
+// System package installation
+const curlTask = createPackageInstallTask("curl", cwd, env);
+taskRegistry.register(curlTask);
+
+// Command availability check
+const checkTask = createCommandCheckTask("git", cwd, env);
+taskRegistry.register(checkTask);
+
+// Custom task
+const customTask = createCustomTask(
+  "custom:my-operation",
+  "My custom operation",
+  async () => {
+    // Your custom logic
+  },
+  { priority: 50 }
+);
+taskRegistry.register(customTask);
+```
+
+#### Using Task Registry in Plugins
+
+```typescript
+export function createPlugin(instance): GenesisPlugin {
+  return {
+    id: instance.id,
+    category: instance.category,
+
+    // Phase 1: Register system-level tasks
+    async registerTasks(runtime) {
+      const { taskRegistry } = runtime.context;
+
+      // Register package manager update (deduplicated!)
+      taskRegistry.register(
+        createPackageManagerUpdateTask(
+          runtime.context.cwd,
+          runtime.context.env
+        )
+      );
+
+      // Register system package installation
+      taskRegistry.register(
+        createPackageInstallTask(
+          "curl",
+          runtime.context.cwd,
+          runtime.context.env
+        )
+      );
+    },
+
+    // Phase 3: Perform plugin-specific installation
+    async apply(runtime) {
+      // System packages are now available
+      // Perform plugin-specific installation
+      return { ok: true, didChange: true };
+    },
+  };
+}
+```
+
+**See [Task Deduplication Documentation](../../docs/TASK_DEDUPLICATION.md) for complete details.**
 
 ### Platform Utilities
 
@@ -325,6 +457,22 @@ export type {
   ValidateResult,
 } from "./plugins/types.js";
 
+// Task Registry & Deduplication
+export { TaskRegistry } from "./execution/task-registry.js";
+export {
+  createPackageManagerUpdateTask,
+  createPackageInstallTask,
+  createCommandCheckTask,
+  createCustomTask,
+} from "./execution/system-tasks.js";
+export type {
+  Task,
+  TaskId,
+  TaskExecutor,
+  TaskResult,
+  TaskStatus,
+} from "./execution/task-registry.js";
+
 // Platform Utilities
 export { getPlatform, type Platform } from "./os/platform.js";
 export { runCommand, type RunCommandResult } from "./os/shell.js";
@@ -375,6 +523,7 @@ import {
   buildPluginGraph,
   runApply,
   Logger,
+  TaskRegistry,
 } from "@genesis/core";
 
 // Load configuration
@@ -392,17 +541,67 @@ const graph = buildPluginGraph(plugins);
 // Create logger
 const logger = new Logger({ level: "info" });
 
-// Execute plugins
+// Create task registry for deduplication
+const taskRegistry = new TaskRegistry(logger);
+
+// Execute plugins with three-phase execution
 const results = await runApply(graph, {
   cwd: process.cwd(),
   env: process.env,
   logger,
+  taskRegistry,  // Task registry enables deduplication
 });
 
 // Process results
 results.forEach((result) => {
   console.log(`${result.id}: ${result.ok ? "✓" : "✗"} ${result.details}`);
 });
+```
+
+### Using Task Registry for Optimization
+
+```typescript
+import {
+  TaskRegistry,
+  createPackageManagerUpdateTask,
+  createPackageInstallTask,
+  Logger,
+} from "@genesis/core";
+
+const logger = new Logger({ level: "info" });
+const taskRegistry = new TaskRegistry(logger);
+
+// Multiple plugins can register the same task
+// It will only execute once!
+
+// Plugin 1 registers apt-get update
+taskRegistry.register(
+  createPackageManagerUpdateTask(process.cwd(), process.env)
+);
+
+// Plugin 2 also registers apt-get update (deduplicated!)
+taskRegistry.register(
+  createPackageManagerUpdateTask(process.cwd(), process.env)
+);
+
+// Plugin 1 needs curl
+taskRegistry.register(
+  createPackageInstallTask("curl", process.cwd(), process.env)
+);
+
+// Plugin 2 needs python
+taskRegistry.register(
+  createPackageInstallTask("python3", process.cwd(), process.env)
+);
+
+// Execute all tasks (apt-get update runs only ONCE!)
+const results = await taskRegistry.executeAll();
+
+console.log("Task execution complete!");
+// Output:
+// ✓ Update APT package index (runs once)
+// ✓ Install curl via APT
+// ✓ Install python3 via APT
 ```
 
 ---
@@ -439,9 +638,12 @@ src/
 │   ├── schema.ts
 │   └── validator.ts
 ├── plugins/          # Plugin system
-│   ├── executor.ts
+│   ├── executor.ts   # Three-phase execution
 │   ├── loader.ts
 │   └── types.ts
+├── execution/        # Task registry & deduplication (NEW!)
+│   ├── task-registry.ts
+│   └── system-tasks.ts
 ├── os/               # Platform utilities
 │   ├── platform.ts
 │   └── shell.ts
