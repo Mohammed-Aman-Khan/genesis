@@ -311,7 +311,7 @@ Now that you have Genesis installed:
 2. **[Configuration](/guide/configuration)** - Learn about configuration options
 3. **[Cloud Features](/guide/cloud)** - Team environments and collaboration
 4. **[Plugins](/plugins/overview)** - Discover available plugins
-5. **[API Reference](/api/)** - Complete technical documentation
+5. **[API Reference](/api/core)** - Complete technical documentation
 
 ---
 

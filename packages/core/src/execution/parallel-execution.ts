@@ -337,7 +337,10 @@ export class ParallelExecutionEngine {
     context: GenesisPluginContext,
   ): Promise<ExecutionResult[]> {
     const results: ExecutionResult[] = [];
-    const executing: Promise<ExecutionResult>[] = [];
+    const executing: Array<{
+      promise: Promise<ExecutionResult>;
+      plugin: PluginExecutionNode;
+    }> = [];
     let index = 0;
 
     while (index < plugins.length || executing.length > 0) {
@@ -345,15 +348,23 @@ export class ParallelExecutionEngine {
       while (executing.length < this.maxConcurrency && index < plugins.length) {
         const plugin = plugins[index++];
         const promise = this.executePlugin(plugin, context);
-        executing.push(promise);
+        executing.push({ promise, plugin });
       }
 
-      // Wait for at least one plugin to complete
-      const completed = await Promise.race(executing);
-      results.push(completed);
+      // Wait for at least one plugin to complete and get the result
+      const { promise, plugin, result } = await Promise.race(
+        executing.map(async (item) => {
+          const result = await item.promise;
+          return { promise: item.promise, plugin: item.plugin, result };
+        }),
+      );
+
+      results.push(result);
 
       // Remove completed from executing array
-      const completedIndex = executing.findIndex((p) => p === completed);
+      const completedIndex = executing.findIndex(
+        (item) => item.promise === promise,
+      );
       if (completedIndex >= 0) {
         executing.splice(completedIndex, 1);
       } else {

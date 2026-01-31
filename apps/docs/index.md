@@ -16,27 +16,27 @@ hero:
 features:
   - icon: ⚡
     title: Ridiculously Fast
-    details: Parallel execution + intelligent caching = 3x faster setup. First time: 5 minutes. Cached: 10 seconds.
+    details: "Parallel execution + intelligent caching = 3x faster setup. First time: 5 minutes. Cached: 10 seconds."
 
   - icon: 🎯
     title: Zero Dependencies
-    details: Standalone binary works on fresh systems. No Node.js, no Docker, no Git required. Genesis installs what it needs.
+    details: "Standalone binary works on fresh systems. No Node.js, no Docker, no Git required. Genesis installs what it needs."
 
   - icon: ☁️
     title: Cloud Ready
-    details: `genesis login`, `genesis list`, `genesis apply env-id`. Team environments in the cloud, perfect consistency.
+    details: "`genesis login`, `genesis list`, `genesis apply env-id`. Team environments in the cloud, perfect consistency."
 
   - icon: 🔄
     title: Task Deduplication Magic
-    details: Multiple plugins need curl? Install once. Multiple plugins need brew update? Run once. Smart optimization saves time.
+    details: "Multiple plugins need curl? Install once. Multiple plugins need brew update? Run once. Smart optimization saves time."
 
   - icon: 🌍
     title: Works Everywhere
-    details: Fresh laptop, Docker container, CI/CD pipeline. Same config, perfect results, no "works on my machine" issues.
+    details: 'Fresh laptop, Docker container, CI/CD pipeline. Same config, perfect results, no "works on my machine" issues.'
 
   - icon: 🧩
     title: Plugin Ecosystem
-    details: Node.js, Python, Docker, Git, and growing. Build custom plugins with our simple API.
+    details: "Node.js, Python, Docker, Git, and growing. Build custom plugins with our simple API."
 ---
 
 ## **Stop Wasting Time on Setup**
@@ -207,7 +207,7 @@ env:
 - [**Quick Start**](/guide/getting-started) - Create your first environment
 - [**Cloud Features**](/guide/cloud) - Team environments and collaboration
 - [**Plugin Development**](/guide/plugin-development) - Build your own plugins
-- [**API Reference**](/api/) - Complete technical documentation
+- [**API Reference**](/api/core) - Complete technical documentation
 
 </div>
 

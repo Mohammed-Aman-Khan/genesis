@@ -421,7 +421,7 @@ Now that you have Genesis working:
 2. **[Learn Configuration](/guide/configuration)** - Advanced configuration options
 3. **[Discover Plugins](/plugins/overview)** - See what plugins are available
 4. **[Build Plugins](/guide/plugin-development)** - Create your own plugins
-5. **[API Reference](/api/)** - Complete technical documentation
+5. **[API Reference](/api/core)** - Complete technical documentation
 
 ---
 
