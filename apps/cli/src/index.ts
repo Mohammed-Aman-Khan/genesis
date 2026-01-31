@@ -6,12 +6,14 @@ import { registerDiffCommand } from "./commands/diff.js";
 import { registerValidateCommand } from "./commands/validate.js";
 import { registerInitCommand } from "./commands/init.js";
 import { registerListPluginsCommand } from "./commands/list-plugins.js";
+import { registerLoginCommand } from "./commands/login.js";
+import { registerListCommand } from "./commands/list.js";
 
 export function createCli(): Command {
   const program = new Command();
   program.name("genesis");
   program.description(
-    "Rebuild any developer environment. Deterministic. Portable. Declarative."
+    "Rebuild any developer environment. Deterministic. Portable. Declarative.",
   );
   registerCreateCommand(program);
   registerApplyCommand(program);
@@ -20,10 +22,14 @@ export function createCli(): Command {
   registerValidateCommand(program);
   registerInitCommand(program);
   registerListPluginsCommand(program);
+  registerLoginCommand(program);
+  registerListCommand(program);
   return program;
 }
 
-export async function run(argv: string[] = process.argv): Promise<void> {
+export async function run(
+  argv: string[] = globalThis.process?.argv.slice() || [],
+): Promise<void> {
   const program = createCli();
   await program.parseAsync(argv);
 }
@@ -31,5 +37,7 @@ export async function run(argv: string[] = process.argv): Promise<void> {
 run().catch((error) => {
   const value = error instanceof Error ? error.message : String(error);
   console.error(value);
-  process.exit(1);
+  if (typeof globalThis.process !== "undefined") {
+    globalThis.process.exit(1);
+  }
 });

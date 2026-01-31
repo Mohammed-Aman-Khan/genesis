@@ -20,7 +20,8 @@
     "clean": "rm -rf dist",
     "lint": "eslint src --ext .ts",
     "test": "vitest",
-    "build:binary": "pkg dist/index.js --out-path bin"
+    "build:standalone": "bun build src/index.ts --compile --outfile bin/genesis --target bun-darwin-x64,bun-linux-x64,bun-windows-x64",
+    "build:standalone-all": "bun build src/index.ts --compile --outfile bin/genesis --target bun-darwin-x64,bun-darwin-arm64,bun-linux-x64,bun-linux-arm64,bun-windows-x64"
   },
   "dependencies": {
     "@genesis/core": "workspace:*",
