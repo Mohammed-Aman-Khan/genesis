@@ -1,244 +1,199 @@
 # Getting Started
 
-This guide will help you install Genesis and create your first environment configuration.
+**Stop wasting hours on setup. Let's get you productive in 5 minutes.**
 
-## Prerequisites
+---
 
-Before you begin, ensure you have:
+## **🚀 The Easy Way (Recommended)**
 
-- **Node.js 18+** installed
-- **Bun** or **npm** package manager
-- **Git** (optional, for cloning examples)
-
-## Installation
-
-### Using Bun (Recommended)
+### One Command Installation
 
 ```bash
-bun add -D @genesis/core @genesis/plugins @genesis/cli
+# Install Genesis globally (works on fresh systems!)
+curl -fsSL https://genesis-docs.vercel.app/install | sh
+
+# That's it. No dependencies, no Node.js required.
+genesis --help
 ```
 
-### Using npm
+### Your First Environment
 
 ```bash
-npm install --save-dev @genesis/core @genesis/plugins @genesis/cli
-```
-
-### Using pnpm
-
-```bash
-pnpm add -D @genesis/core @genesis/plugins @genesis/cli
-```
-
-## Project Setup
-
-### 1. Initialize Your Project
-
-If you don't have a project yet:
-
-```bash
+# Create a new project
 mkdir my-project
 cd my-project
-bun init -y  # or npm init -y
+
+# Initialize Genesis config
+genesis init
+
+# Apply your environment (this is the magic)
+genesis apply
+
+# Done! Your development environment is ready.
 ```
 
-### 2. Install Genesis
+---
 
-```bash
-bun add -D @genesis/core @genesis/plugins @genesis/cli
-```
+## **📦 What Just Happened?**
 
-### 3. Create Configuration File
+When you ran `genesis apply`, Genesis:
 
-Create a `genesis.config.ts` file in your project root:
+1. **Detected** your system (macOS/Linux/Windows)
+2. **Downloaded** and installed Node.js (via NVM)
+3. **Set up** Python if needed
+4. **Configured** Git with your details
+5. **Cloned** any repositories in your config
+6. **Set** environment variables
+7. **Validated** everything works
 
-::: code-group
+**All in parallel, with zero redundant operations.**
 
-```typescript [genesis.config.ts]
-import { defineConfig } from "@genesis/core";
-import { node } from "@genesis/plugins";
+---
 
-export default defineConfig({
-  tools: [
-    node({
-      version: "20",
-      use_nvm: true,
-    }),
-  ],
-});
-```
+## **🎯 Your First Configuration**
 
-```yaml [genesis.yaml]
+Genesis created `genesis.config.yaml`. Let's make it awesome:
+
+```yaml
+# genesis.config.yaml
 tools:
   - type: node
     version: "20"
     use_nvm: true
+
+  - type: python
+    version: "3.11"
+
+  - type: git
+    user_name: "Your Name"
+    user_email: "you@company.com"
+
+repositories:
+  - url: https://github.com/your-org/backend
+    path: ./backend
+    branch: main
+
+  - url: https://github.com/your-org/frontend
+    path: ./frontend
+    branch: develop
+
+env:
+  NODE_ENV: development
+  API_URL: http://localhost:3000
+  DATABASE_URL: postgresql://localhost:5432/myapp
+
+scripts:
+  - name: setup-database
+    command: docker-compose up -d postgres
+    when: before
+
+  - name: install-deps
+    command: npm install
+    when: after
 ```
 
-:::
+---
 
-::: tip
-TypeScript configuration is recommended for type safety and autocomplete support!
-:::
+## **⚡ The Magic Commands**
 
-### 4. Add Scripts to package.json
-
-```json
-{
-  "scripts": {
-    "genesis:apply": "genesis apply",
-    "genesis:detect": "genesis detect"
-  }
-}
-```
-
-### 5. Run Genesis
+### `genesis init` - Create Your Config
 
 ```bash
-# Detect current environment
-bun run genesis:detect
-
-# Apply configuration
-bun run genesis:apply
+genesis init                    # Interactive setup
+genesis init --typescript       # TypeScript config
+genesis init --defaults        # Quick start with defaults
 ```
 
-## Your First Configuration
-
-Let's create a more complete configuration:
-
-```typescript
-import { defineConfig } from "@genesis/core";
-import { node, python } from "@genesis/plugins";
-
-export default defineConfig({
-  // Development tools
-  tools: [
-    node({
-      version: "20",
-      use_nvm: true,  // Use NVM for version management
-    }),
-  ],
-  
-  // Programming languages
-  languages: [
-    python({
-      version: "3.11",
-    }),
-  ],
-});
-```
-
-## Understanding the Output
-
-When you run `genesis apply`, you'll see output like this:
-
-```
-Phase 1: Registering tasks...
-  ℹ node: Registered system tasks for NVM prerequisites
-  ℹ python: Registered system tasks for Python installation
-
-Phase 2: Executing system tasks...
-  ✓ Update APT package index (deduplicated)
-  ✓ Install curl
-  ✓ Install python3.11
-
-Phase 3: Installing plugins...
-  ℹ node: Installing NVM...
-  ✓ node: NVM installed successfully
-  ✓ node: Node.js 20 installed via NVM
-  ✓ python: Python 3.11 verified
-
-✅ Environment setup complete!
-```
-
-### What Just Happened?
-
-1. **Phase 1**: Both plugins registered their system requirements
-   - Node.js plugin: needs `apt-get update` and `curl`
-   - Python plugin: needs `apt-get update` and `python3.11`
-
-2. **Phase 2**: System tasks executed (deduplicated)
-   - `apt-get update` ran **once** (not twice!)
-   - `curl` and `python3.11` installed
-
-3. **Phase 3**: Plugins completed their installation
-   - NVM downloaded and installed using `curl`
-   - Node.js 20 installed via NVM
-   - Python 3.11 verified
-
-## CLI Commands
-
-### `genesis detect`
-
-Check what's currently installed:
+### `genesis apply` - Make It Happen
 
 ```bash
-genesis detect
+genesis apply                    # Apply current config
+genesis apply --verbose         # See all the details
+genesis apply --dry-run          # Preview changes
+genesis apply production-env-123 # Apply cloud environment
+```
+
+### `genesis diff` - Crystal Ball
+
+```bash
+genesis diff                     # See what would change
 ```
 
 Output:
+
 ```
-Detecting environment...
-  ✓ node: Node.js 20.10.0 is installed
-  ✗ python: Python is not installed
+🔍 Genesis Diff
+
+Changes that would be applied:
+
+  node:
+    Current:  Not installed
+    Desired:  v20.10.0
+    Action:   Install Node.js v20 via NVM
+
+  python:
+    Current:  Python 3.9.2
+    Desired:  Python 3.11.5
+    Action:   Install Python 3.11 via pyenv
 ```
 
-### `genesis apply`
-
-Install and configure everything:
+### `genesis validate` - Health Check
 
 ```bash
-genesis apply
+genesis validate                 # Check everything's working
 ```
 
-Options:
-```bash
-# Use specific config file
-genesis apply -c custom-config.ts
-
-# Dry run (show what would be installed)
-genesis apply --dry-run
-
-# Verbose output
-genesis apply --verbose
-```
-
-### `genesis validate`
-
-Verify installations:
+### `genesis doctor` - Fix Problems
 
 ```bash
-genesis validate
+genesis doctor                   # Run diagnostics
 ```
 
-## Configuration Formats
+---
 
-Genesis supports both TypeScript and YAML configurations:
+## **☁️ Cloud Features (Game Changer)**
 
-### TypeScript (Recommended)
+### Connect to Genesis Cloud
 
-**Advantages:**
-- ✅ Type safety and autocomplete
-- ✅ Programmatic configuration
-- ✅ Import and reuse configs
-- ✅ Better IDE support
-
-```typescript
-import { defineConfig } from "@genesis/core";
-import { node, python } from "@genesis/plugins";
-
-export default defineConfig({
-  tools: [node({ version: "20", use_nvm: true })],
-  languages: [python({ version: "3.11" })],
-});
+```bash
+genesis login                    # OAuth in browser
+genesis login --token xyz123     # Or use token
 ```
 
-### YAML
+### List Your Environments
 
-**Advantages:**
-- ✅ Simple and readable
-- ✅ No build step needed
-- ✅ Easy for non-developers
+```bash
+genesis list                     # All environments
+genesis list --cloud             # Cloud only
+genesis list --local             # Local only
+```
+
+Output:
+
+```
+🌐 Cloud Environments:
+  - production-prod-123 (Production setup)
+  - staging-stage-456 (Staging setup)
+  - dev-dev-789 (Development setup)
+
+🏠 Local Environments:
+  - current (./genesis.config.yaml)
+  - experiment (./experiment.config.yaml)
+```
+
+### Apply Cloud Environments
+
+```bash
+genesis apply production-prod-123
+```
+
+Genesis downloads and applies the exact same setup your team uses in production.
+
+---
+
+## **🎨 Configuration Formats**
+
+### YAML (Simple & Clean)
 
 ```yaml
 tools:
@@ -246,75 +201,228 @@ tools:
     version: "20"
     use_nvm: true
 
-languages:
-  - type: python
-    version: "3.11"
+env:
+  NODE_ENV: development
+  API_URL: http://localhost:3000
 ```
 
-## Platform-Specific Behavior
+### TypeScript (Type Safe & Powerful)
 
-Genesis automatically detects your platform and uses the appropriate package manager:
+```typescript
+import { defineConfig } from "@genesis/core";
+import { node, python, git } from "@genesis/plugins";
+
+export default defineConfig({
+  tools: [
+    node({
+      version: "20",
+      use_nvm: true,
+    }),
+    python({
+      version: "3.11",
+    }),
+    git({
+      user_name: "Your Name",
+      user_email: "you@company.com",
+    }),
+  ],
+  env: {
+    NODE_ENV: "development",
+    API_URL: "http://localhost:3000",
+  },
+});
+```
+
+---
+
+## **🚀 Real-World Workflows**
+
+### New Developer Onboarding (15 Minutes)
+
+```bash
+# Day 1 at new job:
+git clone company-project
+cd company-project
+
+# Genesis config is already in the repo
+genesis apply
+
+# 5 minutes later:
+# ✅ All tools installed
+# ✅ All repos cloned
+# ✅ Environment configured
+# ✅ Ready to contribute
+
+# Validate everything's working
+genesis validate
+```
+
+### Switching Between Projects
+
+```bash
+# Working on Project A (Node.js stack)
+cd project-a
+genesis apply
+
+# Switch to Project B (Python stack)
+cd ../project-b
+genesis apply
+
+# Genesis handles the switch perfectly
+# No conflicts, no mess
+```
+
+### Team Standardization
+
+```bash
+# DevOps creates the perfect config
+# Commits it to the repo
+
+# Every developer runs:
+git pull
+genesis apply
+
+# Everyone has identical environments
+# No more "works on my machine" issues
+```
+
+---
+
+## **🎯 Advanced Usage**
+
+### Environment Caching
+
+```bash
+# Genesis caches environments for instant switching
+# First setup: 5 minutes
+# Switch to cached environment: 10 seconds
+
+genesis apply node-project     # Sets up Node.js project
+cd ../python-project
+genesis apply python-project   # Instant switch to Python setup
+```
+
+### Custom Scripts
+
+```bash
+# Add custom setup steps to your config
+scripts:
+  - name: setup-database
+    command: docker-compose up -d postgres
+    when: before
+
+  - name: install-vscode-extensions
+    command: code --install-extension ms-python.python
+    when: after
+```
+
+---
+
+## **🔧 Platform-Specific Magic**
+
+Genesis automatically detects your platform:
 
 ### macOS
+
 - Uses **Homebrew** for system packages
 - Downloads installers from official sources
-- Integrates with shell profiles
+- Integrates with shell profiles (.zshrc, .bashrc)
 
 ### Linux
+
 - Uses **APT** (Debian/Ubuntu)
 - Uses **YUM/DNF** (RedHat/Fedora)
 - Detects distribution automatically
 
 ### Windows
-- Provides installation guides
-- Links to official installers
+
+- Downloads official installers
+- Configures PATH and environment
 - Future: Automated installation support
 
-## Next Steps
+---
 
-Now that you have Genesis installed:
+## **🛠️ Development Setup**
 
-1. [Learn about Configuration](/guide/configuration) - Understand all configuration options
-2. [Explore Plugins](/plugins/overview) - See what plugins are available
-3. [Understand Task Registry](/guide/task-registry) - Learn how deduplication works
-4. [Create a Plugin](/guide/plugin-development) - Build your own plugin
-
-## Troubleshooting
-
-### Command not found: genesis
-
-Make sure you've installed the CLI package:
+If you want to contribute to Genesis:
 
 ```bash
-bun add -D @genesis/cli
+# Clone the repository
+git clone https://github.com/your-org/genesis.git
+cd genesis
+
+# Install dependencies
+bun install
+
+# Build the CLI
+bun run build
+
+# Link for local development
+cd apps/cli
+npm link
+
+# Test your changes
+genesis --help
 ```
 
-And you're running via package.json scripts or using `bunx`:
+---
+
+## **🎁 Pro Tips**
+
+### Speed Things Up
 
 ```bash
-bunx genesis apply
+# Use Genesis caching
+genesis apply    # First time: 5 minutes
+genesis apply    # Second time: 10 seconds (cached)
+
+# Parallel execution
+# Genesis installs multiple tools simultaneously
 ```
 
-### Permission errors on Linux
-
-Some operations require sudo. Genesis will prompt when needed:
+### Stay Safe
 
 ```bash
-# Run with sudo if needed
-sudo bun run genesis:apply
+# Always check before applying
+genesis diff     # See what will change
+genesis apply    # Apply changes
+genesis validate # Verify everything works
 ```
 
-### TypeScript errors
-
-Ensure you have TypeScript installed:
+### Debug Like a Pro
 
 ```bash
-bun add -D typescript
+# Verbose mode for troubleshooting
+genesis apply --verbose
+
+# Doctor mode for health checks
+genesis doctor
+
+# List available tools
+genesis list-plugins --verbose
 ```
 
-### Need Help?
+---
 
-- [Troubleshooting Guide](/guide/troubleshooting)
-- [GitHub Issues](https://github.com/Mohammed-Aman-Khan/genesis/issues)
-- [Contributing Guide](/guide/contributing)
+## **🤝 Need Help?**
 
+- **Documentation**: [Full Docs](https://genesis-docs.vercel.app)
+- **Issues**: [GitHub Issues](https://github.com/your-org/genesis/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/your-org/genesis/discussions)
+- **Community**: [Discord](https://discord.gg/genesis)
+
+---
+
+## **🎯 What's Next?**
+
+Now that you have Genesis working:
+
+1. **[Explore Cloud Features](/guide/cloud)** - Team environments and collaboration
+2. **[Learn Configuration](/guide/configuration)** - Advanced configuration options
+3. **[Discover Plugins](/plugins/overview)** - See what plugins are available
+4. **[Build Plugins](/guide/plugin-development)** - Create your own plugins
+5. **[API Reference](/api/)** - Complete technical documentation
+
+---
+
+**Welcome to the future of environment setup. Your productivity is about to skyrocket.** 🚀

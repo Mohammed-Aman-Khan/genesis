@@ -40,7 +40,9 @@ export default defineConfig({
             items: [
               { text: "What is Genesis?", link: "introduction" },
               { text: "Getting Started", link: "getting-started" },
-              { text: "Quick Start", link: "quick-start" },
+              { text: "Installation", link: "installation" },
+              { text: "Cloud Features", link: "cloud" },
+              { text: "Genesis vs Alternatives", link: "comparison" },
             ],
           },
           {
