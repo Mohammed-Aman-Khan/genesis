@@ -12,3 +12,4 @@ export * from "./env/vars.js";
 export * from "./env/path-editor.js";
 export * from "./execution/task-registry.js";
 export * from "./execution/system-tasks.js";
+export * from "./execution/parallel-execution.js";
