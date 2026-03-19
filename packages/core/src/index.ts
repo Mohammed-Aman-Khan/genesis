@@ -14,3 +14,5 @@ export * from "./execution/task-registry.js";
 export * from "./execution/system-tasks.js";
 export * from "./execution/parallel-execution.js";
 export * from "./cache/environment-cache.js";
+export * from "./fs/download.js";
+export * from "./fs/paths.js";
