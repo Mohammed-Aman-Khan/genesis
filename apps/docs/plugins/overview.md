@@ -8,21 +8,21 @@ Genesis uses a plugin-based architecture to support different tools, languages, 
 
 Development tools and utilities:
 
-| Plugin                              | Description                       | Platforms             | Status     |
-| ----------------------------------- | --------------------------------- | --------------------- | ---------- |
-| [Node.js](/plugins/node)            | Node.js runtime with NVM support  | macOS, Linux, Windows | ✅ Stable  |
-| [Git](/plugins/git)                 | Git version control system        | macOS, Linux, Windows | ✅ Stable  |
-| [Docker](/plugins/docker)           | Docker containerization platform  | macOS, Linux, Windows | ✅ Stable  |
-| [Homebrew](/plugins/homebrew)       | Package manager for macOS         | macOS                 | ✅ Stable  |
-| [Bun](/plugins/bun)                 | Fast JavaScript runtime           | macOS, Linux, Windows | 🚧 Planned |
-| [Deno](/plugins/deno)               | Secure JavaScript runtime         | macOS, Linux, Windows | 🚧 Planned |
-| [pnpm](/plugins/pnpm)               | Fast package manager              | macOS, Linux, Windows | 🚧 Planned |
-| [Yarn](/plugins/yarn)               | Package manager for Node.js       | macOS, Linux, Windows | 🚧 Planned |
-| [Android SDK](/plugins/android-sdk) | Android development tools         | macOS, Linux, Windows | 🚧 Planned |
-| [Expo](/plugins/expo)               | React Native development platform | macOS, Linux, Windows | 🚧 Planned |
-| [PostgreSQL](/plugins/postgresql)   | PostgreSQL database server        | macOS, Linux, Windows | 🚧 Planned |
-| [Redis](/plugins/redis)             | Redis in-memory data store        | macOS, Linux, Windows | 🚧 Planned |
-| [MongoDB](/plugins/mongodb)         | MongoDB database server           | macOS, Linux, Windows | 🚧 Planned |
+| Plugin                        | Description                       | Platforms             | Status     |
+| ----------------------------- | --------------------------------- | --------------------- | ---------- |
+| [Node.js](/plugins/node)      | Node.js runtime with NVM support  | macOS, Linux, Windows | ✅ Stable  |
+| [Git](/plugins/git)           | Git version control system        | macOS, Linux, Windows | ✅ Stable  |
+| [Docker](/plugins/docker)     | Docker containerization platform  | macOS, Linux, Windows | ✅ Stable  |
+| [Homebrew](/plugins/homebrew) | Package manager for macOS         | macOS                 | ✅ Stable  |
+| Bun                           | Fast JavaScript runtime           | macOS, Linux, Windows | 🚧 Planned |
+| Deno                          | Secure JavaScript runtime         | macOS, Linux, Windows | 🚧 Planned |
+| pnpm                          | Fast package manager              | macOS, Linux, Windows | 🚧 Planned |
+| Yarn                          | Package manager for Node.js       | macOS, Linux, Windows | 🚧 Planned |
+| Android SDK                   | Android development tools         | macOS, Linux, Windows | 🚧 Planned |
+| Expo                          | React Native development platform | macOS, Linux, Windows | 🚧 Planned |
+| PostgreSQL                    | PostgreSQL database server        | macOS, Linux, Windows | 🚧 Planned |
+| Redis                         | Redis in-memory data store        | macOS, Linux, Windows | 🚧 Planned |
+| MongoDB                       | MongoDB database server           | macOS, Linux, Windows | 🚧 Planned |
 
 ### Languages
 
@@ -33,9 +33,9 @@ Programming language runtimes:
 | [Python](/plugins/python) | Python runtime via system package manager | macOS, Linux, Windows | ✅ Stable  |
 | [Java](/plugins/java)     | Java Development Kit (JDK)                | macOS, Linux, Windows | ✅ Stable  |
 | [Go](/plugins/go)         | Go programming language                   | macOS, Linux, Windows | ✅ Stable  |
-| [Rust](/plugins/rust)     | Rust programming language                 | macOS, Linux, Windows | 🚧 Planned |
-| [C++](/plugins/cpp)       | C++ programming language                  | macOS, Linux, Windows | 🚧 Planned |
-| [Swift](/plugins/swift)   | Swift programming language                | macOS                 | 🚧 Planned |
+| Rust                      | Rust programming language                 | macOS, Linux, Windows | 🚧 Planned |
+| C++                       | C++ programming language                  | macOS, Linux, Windows | 🚧 Planned |
+| Swift                     | Swift programming language                | macOS                 | 🚧 Planned |
 
 ### SDKs
 
