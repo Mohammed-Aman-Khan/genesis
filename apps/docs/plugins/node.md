@@ -43,28 +43,51 @@ tools:
 
 ```typescript
 interface NodeOptions {
-  version: string;      // Required: Node.js version to install
-  use_nvm?: boolean;    // Optional: Use NVM (default: true)
+  version: string; // Required: Node.js version to install
+  use_nvm?: boolean; // Optional: Use NVM (default: true)
+  global_packages?: string[]; // Optional: Global packages to install after setup
 }
 ```
 
 ### `version` (required)
 
 The Node.js version to install. Can be:
+
 - Major version: `"20"`, `"18"`, `"16"`
 - Full version: `"20.10.0"`, `"18.16.0"`
 
 ### `use_nvm` (optional)
 
-Whether to use NVM for installation.
-- Default: `true`
-- Set to `false` for standalone installation
+Whether to use NVM for Node.js installation. Default: `true`.
+
+- `true`: Install Node.js via NVM (recommended)
+- `false`: Use standalone installation (not yet implemented)
+
+### `global_packages` (optional)
+
+List of global packages to install after Node.js setup is complete. Supports npm, yarn, pnpm, and bun packages.
+
+```typescript
+node({
+  version: "20",
+  global_packages: [
+    "typescript", // TypeScript compiler
+    "ts-node", // TypeScript runtime
+    "nodemon", // Auto-restart for Node.js
+    "eslint", // Code linting
+    "prettier", // Code formatting
+  ],
+});
+```
+
+The plugin will automatically detect which package managers are available and install packages using the first one found (npm → yarn → pnpm → bun).
 
 ## Installation Methods
 
 ### NVM (Recommended, Default)
 
 **Advantages:**
+
 - ✅ Manage multiple Node.js versions
 - ✅ Easy version switching
 - ✅ Per-project version configuration
@@ -72,6 +95,7 @@ Whether to use NVM for installation.
 - ✅ Shell integration
 
 **Platforms:**
+
 - macOS: Automatic installation
 - Linux: Automatic installation
 - Windows: Manual installation guide provided
@@ -81,18 +105,20 @@ Whether to use NVM for installation.
 ```typescript
 node({
   version: "20",
-  use_nvm: true,  // Default
-})
+  use_nvm: true, // Default
+});
 ```
 
 ### Standalone
 
 **Advantages:**
+
 - ✅ System-wide installation
 - ✅ Simpler setup
 - ✅ No version manager overhead
 
 **Platforms:**
+
 - All platforms supported
 
 **Example:**
@@ -101,7 +127,7 @@ node({
 node({
   version: "18",
   use_nvm: false,
-})
+});
 ```
 
 ## Platform-Specific Behavior
@@ -109,6 +135,7 @@ node({
 ### macOS
 
 **NVM Installation:**
+
 1. Registers system tasks (package manager update, curl installation)
 2. Downloads NVM install script from official repository
 3. Executes installation script
@@ -117,12 +144,14 @@ node({
 6. Integrates with shell profile (`.bashrc`, `.zshrc`)
 
 **Standalone Installation:**
+
 - Downloads Node.js installer from nodejs.org
 - Runs installer package
 
 ### Linux
 
 **NVM Installation:**
+
 1. Registers system tasks (apt-get update, curl installation)
 2. Downloads NVM install script from official repository
 3. Executes installation script
@@ -131,18 +160,21 @@ node({
 6. Integrates with shell profile (`.bashrc`, `.zshrc`)
 
 **Standalone Installation:**
+
 - Uses package manager (apt, yum, etc.)
 - Or downloads binary from nodejs.org
 
 ### Windows
 
 **NVM Installation:**
+
 - Detects Windows platform
 - Displays comprehensive installation guide for nvm-windows
 - Provides download link and step-by-step instructions
 - **Does NOT attempt automatic installation**
 
 **Standalone Installation:**
+
 - Downloads Node.js installer from nodejs.org
 - Runs MSI installer
 
@@ -155,6 +187,7 @@ The Node.js plugin uses Genesis's three-phase execution model:
 Registers system-level prerequisites:
 
 **macOS/Linux with NVM:**
+
 ```
 Registering system tasks...
   - Package manager update (deduplicated!)
@@ -162,6 +195,7 @@ Registering system tasks...
 ```
 
 **Windows or Standalone:**
+
 - No system tasks registered
 
 ### Phase 2: System Task Execution
@@ -179,6 +213,7 @@ Executing system tasks...
 Performs NVM and Node.js installation:
 
 **macOS/Linux:**
+
 ```
 Installing plugins...
   ℹ node: Checking if NVM is installed...
@@ -190,11 +225,12 @@ Installing plugins...
 ```
 
 **Windows:**
+
 ```
 Installing plugins...
   ℹ node: Windows detected
   ℹ node: Please install nvm-windows manually:
-  
+
   1. Download from: https://github.com/coreybutler/nvm-windows/releases
   2. Run the installer
   3. Open new terminal
@@ -228,8 +264,8 @@ import { node } from "@genesis/plugins";
 
 export default defineConfig({
   tools: [
-    node({ version: "20", use_nvm: true }),  // Latest Node 20
-    node({ version: "18", use_nvm: true }),  // Latest Node 18
+    node({ version: "20", use_nvm: true }), // Latest Node 20
+    node({ version: "18", use_nvm: true }), // Latest Node 18
   ],
 });
 ```
@@ -241,12 +277,8 @@ import { defineConfig } from "@genesis/core";
 import { node, python } from "@genesis/plugins";
 
 export default defineConfig({
-  tools: [
-    node({ version: "20", use_nvm: true }),
-  ],
-  languages: [
-    python({ version: "3.11" }),
-  ],
+  tools: [node({ version: "20", use_nvm: true })],
+  languages: [python({ version: "3.11" })],
 });
 ```
 
@@ -259,6 +291,7 @@ export default defineConfig({
 **Problem:** NVM command not available after installation.
 
 **Solution:**
+
 ```bash
 # Reload shell configuration
 source ~/.bashrc  # or ~/.zshrc
@@ -271,6 +304,7 @@ source ~/.bashrc  # or ~/.zshrc
 **Problem:** Different Node.js version installed than requested.
 
 **Solution:**
+
 ```bash
 # With NVM
 nvm install <version>
@@ -286,6 +320,7 @@ node --version
 **Problem:** Automatic installation not supported on Windows.
 
 **Solution:**
+
 1. Follow the installation guide logged by Genesis
 2. Download nvm-windows from: https://github.com/coreybutler/nvm-windows/releases
 3. Run the installer
@@ -298,6 +333,7 @@ node --version
 **Problem:** Permission denied during installation.
 
 **Solution:**
+
 ```bash
 # NVM should NOT require sudo
 # If you see permission errors, check NVM installation
@@ -314,11 +350,13 @@ source ~/.bashrc  # or ~/.zshrc
 ### Project-Specific Version
 
 Create `.nvmrc` in your project:
+
 ```
 20.10.0
 ```
 
 Then use:
+
 ```bash
 nvm use
 ```
@@ -329,9 +367,7 @@ nvm use
 const nodeVersion = process.env.NODE_VERSION || "20";
 
 export default defineConfig({
-  tools: [
-    node({ version: nodeVersion, use_nvm: true }),
-  ],
+  tools: [node({ version: nodeVersion, use_nvm: true })],
 });
 ```
 
@@ -341,4 +377,3 @@ export default defineConfig({
 - [nvm-windows Documentation](https://github.com/coreybutler/nvm-windows)
 - [Node.js Official Website](https://nodejs.org/)
 - [Task Registry](/guide/task-registry) - Learn about task deduplication
-

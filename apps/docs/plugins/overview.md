@@ -8,8 +8,8 @@ Genesis uses a plugin-based architecture to support different tools, languages, 
 
 Development tools and utilities:
 
-| Plugin                        | Description                       | Platforms             | Status     |
-| ----------------------------- | --------------------------------- | --------------------- | ---------- |
+| Plugin                        | Plugin                            | Description           | Platforms  | Status |
+| ----------------------------- | --------------------------------- | --------------------- | ---------- | ------ |
 | [Node.js](/plugins/node)      | Node.js runtime with NVM support  | macOS, Linux, Windows | ✅ Stable  |
 | [Git](/plugins/git)           | Git version control system        | macOS, Linux, Windows | ✅ Stable  |
 | [Docker](/plugins/docker)     | Docker containerization platform  | macOS, Linux, Windows | ✅ Stable  |
@@ -26,10 +26,8 @@ Development tools and utilities:
 
 ### Languages
 
-Programming language runtimes:
-
-| Plugin                    | Description                               | Platforms             | Status     |
-| ------------------------- | ----------------------------------------- | --------------------- | ---------- |
+| Programming language      | Plugin                                    | Description           | Platforms  | Status |
+| ------------------------- | ----------------------------------------- | --------------------- | ---------- | ------ |
 | [Python](/plugins/python) | Python runtime via system package manager | macOS, Linux, Windows | ✅ Stable  |
 | [Java](/plugins/java)     | Java Development Kit (JDK)                | macOS, Linux, Windows | ✅ Stable  |
 | [Go](/plugins/go)         | Go programming language                   | macOS, Linux, Windows | ✅ Stable  |

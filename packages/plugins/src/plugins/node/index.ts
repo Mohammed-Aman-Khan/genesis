@@ -7,6 +7,7 @@ import {
   createPackageManagerUpdateTask,
   createPackageInstallTask,
   createCommandCheckTask,
+  createCustomTask,
 } from "@genesis/core";
 import os from "node:os";
 import path from "node:path";
@@ -15,6 +16,7 @@ import fs from "node:fs";
 export interface NodeOptions {
   version: string;
   use_nvm?: boolean;
+  global_packages?: string[];
 }
 
 export function node(options: NodeOptions): GenesisPluginInstance<NodeOptions> {
@@ -62,7 +64,7 @@ function getNvmDir(env: NodeJS.ProcessEnv): string {
  * Check if NVM is installed
  */
 async function isNvmInstalled(
-  runtime: PluginRuntime<NodeOptions>
+  runtime: PluginRuntime<NodeOptions>,
 ): Promise<boolean> {
   const nvmDir = getNvmDir(runtime.context.env);
   const nvmScript = path.join(nvmDir, "nvm.sh");
@@ -79,7 +81,7 @@ async function isNvmInstalled(
  * Check if NVM command is available in the current shell
  */
 async function isNvmAvailable(
-  runtime: PluginRuntime<NodeOptions>
+  runtime: PluginRuntime<NodeOptions>,
 ): Promise<boolean> {
   // NVM is a shell function, so we need to check if it's sourced
   // We'll try to run a command that sources NVM and checks if it exists
@@ -92,7 +94,7 @@ async function isNvmAvailable(
     {
       cwd: runtime.context.cwd,
       env: runtime.context.env,
-    }
+    },
   );
 
   return result.code === 0 && result.stdout.trim() === "nvm";
@@ -102,7 +104,7 @@ async function isNvmAvailable(
  * Install NVM on macOS/Linux using the official install script
  */
 async function installNvm(
-  runtime: PluginRuntime<NodeOptions>
+  runtime: PluginRuntime<NodeOptions>,
 ): Promise<{ ok: boolean; details: string }> {
   const { logger } = runtime.context;
   const platform = getPlatform();
@@ -129,7 +131,7 @@ async function installNvm(
     {
       cwd: runtime.context.cwd,
       env: runtime.context.env,
-    }
+    },
   );
 
   if (result.code !== 0) {
@@ -143,7 +145,7 @@ async function installNvm(
 
   logger.info("NVM installed successfully");
   logger.info(
-    "Note: You may need to restart your shell or source your profile for NVM to be available"
+    "Note: You may need to restart your shell or source your profile for NVM to be available",
   );
 
   return {
@@ -157,7 +159,7 @@ async function installNvm(
  * Install Node.js using NVM
  */
 async function installNodeViaNvm(
-  runtime: PluginRuntime<NodeOptions>
+  runtime: PluginRuntime<NodeOptions>,
 ): Promise<{ ok: boolean; details: string }> {
   const { logger } = runtime.context;
   const { version } = runtime.options;
@@ -174,7 +176,7 @@ async function installNodeViaNvm(
     {
       cwd: runtime.context.cwd,
       env: runtime.context.env,
-    }
+    },
   );
 
   if (installResult.code !== 0) {
@@ -198,7 +200,7 @@ async function installNodeViaNvm(
     {
       cwd: runtime.context.cwd,
       env: runtime.context.env,
-    }
+    },
   );
 
   if (aliasResult.code !== 0) {
@@ -244,6 +246,138 @@ function logWindowsNvmGuide(logger: any): void {
   logger.info("");
 }
 
+/**
+ * Install global npm packages
+ */
+async function installGlobalNpmPackages(
+  runtime: PluginRuntime<NodeOptions>,
+  packages: string[],
+): Promise<{ ok: boolean; details: string }> {
+  const { logger } = runtime.context;
+
+  if (packages.length === 0) {
+    return { ok: true, details: "No global npm packages to install" };
+  }
+
+  logger.info(`Installing global npm packages: ${packages.join(", ")}`);
+
+  const result = await runCommand("npm", ["install", "-g", ...packages], {
+    cwd: runtime.context.cwd,
+    env: runtime.context.env,
+  });
+
+  if (result.code !== 0) {
+    return {
+      ok: false,
+      details: `Failed to install npm packages: ${result.stderr || "Unknown error"}`,
+    };
+  }
+
+  return {
+    ok: true,
+    details: `Successfully installed npm packages: ${packages.join(", ")}`,
+  };
+}
+
+/**
+ * Install global yarn packages
+ */
+async function installGlobalYarnPackages(
+  runtime: PluginRuntime<NodeOptions>,
+  packages: string[],
+): Promise<{ ok: boolean; details: string }> {
+  const { logger } = runtime.context;
+
+  if (packages.length === 0) {
+    return { ok: true, details: "No global yarn packages to install" };
+  }
+
+  logger.info(`Installing global yarn packages: ${packages.join(", ")}`);
+
+  const result = await runCommand("yarn", ["global", "add", ...packages], {
+    cwd: runtime.context.cwd,
+    env: runtime.context.env,
+  });
+
+  if (result.code !== 0) {
+    return {
+      ok: false,
+      details: `Failed to install yarn packages: ${result.stderr || "Unknown error"}`,
+    };
+  }
+
+  return {
+    ok: true,
+    details: `Successfully installed yarn packages: ${packages.join(", ")}`,
+  };
+}
+
+/**
+ * Install global pnpm packages
+ */
+async function installGlobalPnpmPackages(
+  runtime: PluginRuntime<NodeOptions>,
+  packages: string[],
+): Promise<{ ok: boolean; details: string }> {
+  const { logger } = runtime.context;
+
+  if (packages.length === 0) {
+    return { ok: true, details: "No global pnpm packages to install" };
+  }
+
+  logger.info(`Installing global pnpm packages: ${packages.join(", ")}`);
+
+  const result = await runCommand("pnpm", ["add", "-g", ...packages], {
+    cwd: runtime.context.cwd,
+    env: runtime.context.env,
+  });
+
+  if (result.code !== 0) {
+    return {
+      ok: false,
+      details: `Failed to install pnpm packages: ${result.stderr || "Unknown error"}`,
+    };
+  }
+
+  return {
+    ok: true,
+    details: `Successfully installed pnpm packages: ${packages.join(", ")}`,
+  };
+}
+
+/**
+ * Install global bun packages
+ */
+async function installGlobalBunPackages(
+  runtime: PluginRuntime<NodeOptions>,
+  packages: string[],
+): Promise<{ ok: boolean; details: string }> {
+  const { logger } = runtime.context;
+
+  if (packages.length === 0) {
+    return { ok: true, details: "No global bun packages to install" };
+  }
+
+  logger.info(`Installing global bun packages: ${packages.join(", ")}`);
+
+  const result = await runCommand("bun", ["add", "-g", ...packages], {
+    cwd: runtime.context.cwd,
+    env: runtime.context.env,
+  });
+
+  if (result.code !== 0) {
+    return {
+      ok: false,
+      details: `Failed to install bun packages: ${result.stderr || "Unknown error"}`,
+    };
+  }
+
+  return {
+    ok: true,
+    details: `Successfully installed bun packages: ${packages.join(", ")}`,
+  };
+}
+
 async function detectNode(runtime: PluginRuntime<NodeOptions>) {
   const result = await runCommand("node", ["-v"], {
     cwd: runtime.context.cwd,
@@ -275,7 +409,7 @@ async function detectNode(runtime: PluginRuntime<NodeOptions>) {
 }
 
 export function createPlugin(
-  instance: GenesisPluginInstance<NodeOptions>
+  instance: GenesisPluginInstance<NodeOptions>,
 ): GenesisPlugin<NodeOptions> {
   return {
     id: instance.id,
@@ -285,7 +419,7 @@ export function createPlugin(
     },
     async registerTasks(runtime) {
       const { taskRegistry, logger } = runtime.context;
-      const { use_nvm } = runtime.options;
+      const { use_nvm, global_packages } = runtime.options;
       const platform = getPlatform();
 
       // Skip task registration for Windows (manual installation required)
@@ -296,13 +430,13 @@ export function createPlugin(
       // If using NVM, we need curl to download the NVM install script
       if (use_nvm) {
         logger.debug(
-          "Registering system tasks for NVM installation prerequisites"
+          "Registering system tasks for NVM installation prerequisites",
         );
 
         // Register package manager update (will be deduplicated across plugins)
         const updateTask = createPackageManagerUpdateTask(
           runtime.context.cwd,
-          runtime.context.env
+          runtime.context.env,
         );
         taskRegistry.register(updateTask);
 
@@ -310,13 +444,67 @@ export function createPlugin(
         const curlTask = createPackageInstallTask(
           "curl",
           runtime.context.cwd,
-          runtime.context.env
+          runtime.context.env,
         );
         taskRegistry.register(curlTask);
 
         logger.debug(
-          "System tasks registered: package manager update, curl installation"
+          "System tasks registered: package manager update, curl installation",
         );
+      }
+
+      // Register global package installation tasks if packages are specified
+      if (global_packages && global_packages.length > 0) {
+        logger.debug("Registering global package installation tasks");
+
+        // Register package manager availability checks
+        const packageManagers = ["npm", "yarn", "pnpm", "bun"];
+        for (const pm of packageManagers) {
+          const checkTask = createCommandCheckTask(
+            pm,
+            runtime.context.cwd,
+            runtime.context.env,
+          );
+          taskRegistry.register(checkTask);
+        }
+
+        // Register global package installation task
+        const installTask = createCustomTask(
+          "node-global-packages",
+          "Install global Node.js packages",
+          async () => {
+            const results = [];
+            let hasErrors = false;
+
+            // Try npm first
+            const npmResult = await installGlobalNpmPackages(
+              runtime,
+              global_packages,
+            );
+            results.push(npmResult.details);
+            if (!npmResult.ok) hasErrors = true;
+
+            return {
+              ok: !hasErrors,
+              details: results.join("; "),
+              error: hasErrors
+                ? "Some package installations failed"
+                : undefined,
+            };
+          },
+          {
+            priority: 10, // Low priority - run after other setup
+            dependsOn: [
+              "*:command-check:npm",
+              "*:command-check:yarn",
+              "*:command-check:pnpm",
+              "*:command-check:bun",
+            ],
+          },
+        );
+
+        taskRegistry.register(installTask);
+        logger.debug("Global package installation tasks registered");
       }
     },
     async apply(runtime) {
@@ -347,10 +535,10 @@ export function createPlugin(
           };
         } else {
           logger.warn(
-            "Standalone Node.js installation on Windows is not yet supported"
+            "Standalone Node.js installation on Windows is not yet supported",
           );
           logger.info(
-            "Please download and install Node.js manually from https://nodejs.org/"
+            "Please download and install Node.js manually from https://nodejs.org/",
           );
           return {
             ok: false,
@@ -405,7 +593,7 @@ export function createPlugin(
         // Standalone installation (not yet implemented)
         logger.warn("Standalone Node.js installation is not yet supported");
         logger.info(
-          "Please install Node.js manually or set use_nvm: true in your config"
+          "Please install Node.js manually or set use_nvm: true in your config",
         );
         return {
           ok: false,

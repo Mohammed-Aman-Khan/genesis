@@ -6,6 +6,8 @@ import {
   getPlatform,
   createPackageManagerUpdateTask,
   createPackageInstallTask,
+  createCommandCheckTask,
+  createCustomTask,
 } from "@genesis/core";
 import os from "node:os";
 import path from "node:path";
@@ -15,6 +17,7 @@ export interface HomebrewOptions {
   update_packages?: boolean;
   install_cask?: boolean;
   add_to_path?: boolean;
+  global_packages?: string[];
 }
 
 export function homebrew(
@@ -29,6 +32,39 @@ export function homebrew(
       install_cask: options.install_cask ?? true,
       add_to_path: options.add_to_path ?? true,
     },
+  };
+}
+
+/**
+ * Install global brew packages
+ */
+async function installGlobalBrewPackages(
+  runtime: PluginRuntime<HomebrewOptions>,
+  packages: string[],
+): Promise<{ ok: boolean; details: string }> {
+  const { logger } = runtime.context;
+
+  if (packages.length === 0) {
+    return { ok: true, details: "No global brew packages to install" };
+  }
+
+  logger.info(`Installing global brew packages: ${packages.join(", ")}`);
+
+  const result = await runCommand("brew", ["install", ...packages], {
+    cwd: runtime.context.cwd,
+    env: runtime.context.env,
+  });
+
+  if (result.code !== 0) {
+    return {
+      ok: false,
+      details: `Failed to install brew packages: ${result.stderr || "Unknown error"}`,
+    };
+  }
+
+  return {
+    ok: true,
+    details: `Successfully installed brew packages: ${packages.join(", ")}`,
   };
 }
 
@@ -266,6 +302,7 @@ export function createPlugin(
     },
     async registerTasks(runtime) {
       const { taskRegistry, logger } = runtime.context;
+      const { global_packages } = runtime.options;
       const platform = getPlatform();
 
       // Homebrew is macOS only
@@ -290,6 +327,43 @@ export function createPlugin(
         runtime.context.env,
       );
       taskRegistry.register(gitTask);
+
+      // Register global package installation tasks if packages are specified
+      if (global_packages && global_packages.length > 0) {
+        logger.debug("Registering global brew package installation tasks");
+
+        // Register brew availability check
+        const brewCheckTask = createCommandCheckTask(
+          "brew",
+          runtime.context.cwd,
+          runtime.context.env,
+        );
+        taskRegistry.register(brewCheckTask);
+
+        // Register global package installation task
+        const installTask = createCustomTask(
+          "homebrew-global-packages",
+          "Install global Homebrew packages",
+          async () => {
+            const result = await installGlobalBrewPackages(
+              runtime,
+              global_packages,
+            );
+            return {
+              ok: result.ok,
+              details: result.details,
+              error: result.ok ? undefined : "Brew package installation failed",
+            };
+          },
+          {
+            priority: 10, // Low priority - run after other setup
+            dependsOn: ["*:command-check:brew"],
+          },
+        );
+
+        taskRegistry.register(installTask);
+        logger.debug("Global brew package installation tasks registered");
+      }
 
       logger.debug("System tasks registered: curl, git installation");
     },

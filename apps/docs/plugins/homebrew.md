@@ -46,11 +46,29 @@ tools:
 
 ## Options
 
-| Option | Type | Required | Default | Description |
-|---------|--------|----------|-------------|
-| `update_packages` | boolean | No | true | Update installed packages after installation |
-| `install_cask` | boolean | No | true | Include Homebrew Cask for GUI applications |
-| `add_to_path` | boolean | No | true | Add Homebrew to PATH automatically |
+| Option            | Type     | Required | Default   | Description                                  |
+| ----------------- | -------- | -------- | --------- | -------------------------------------------- |
+| `update_packages` | boolean  | No       | true      | Update installed packages after installation |
+| `install_cask`    | boolean  | No       | true      | Include Homebrew Cask for GUI applications   |
+| `add_to_path`     | boolean  | No       | true      | Add Homebrew to PATH automatically           |
+| `global_packages` | string[] | No       | undefined | Global packages to install after setup       |
+
+### `global_packages` (optional)
+
+List of global Homebrew packages to install after Homebrew setup is complete.
+
+```typescript
+homebrew({
+  update_packages: true,
+  global_packages: [
+    "wget", // File downloader
+    "jq", // JSON processor
+    "tree", // Directory tree viewer
+    "htop", // Process viewer
+    "ffmpeg", // Media processing tools
+  ],
+});
+```
 
 ## Platform Support
 
@@ -106,7 +124,7 @@ import { homebrew } from "@genesis/plugins/homebrew";
 
 export default defineConfig({
   tools: [
-    homebrew(),  // Uses defaults: update packages, include cask, add to PATH
+    homebrew(), // Uses defaults: update packages, include cask, add to PATH
   ],
 });
 ```
@@ -375,6 +393,7 @@ brew outdated
 ## Integration with Other Tools
 
 The Homebrew plugin integrates seamlessly with:
+
 - **Development environments**: VS Code, IntelliJ
 - **Container tools**: Docker, Colima
 - **Version control**: Git

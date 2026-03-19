@@ -1,0 +1,29 @@
+tools:
+  - type: node
+    version: "20"
+    use_nvm: true
+    global_packages:
+      - typescript # TypeScript compiler
+      - ts-node # TypeScript runtime
+      - nodemon # Auto-restart for Node.js
+      - eslint # Code linting
+      - prettier # Code formatting
+      - serve # Static file server
+      - parcel-bundler # Application bundler
+      - live-server # Development server
+      - pm2 # Process manager
+      - cross-env # Cross-platform environment variables
+      - concurrently # Run multiple scripts concurrently
+      - bun-types # Bun type definitions
+      - elysia # Bun web framework
+
+  - type: homebrew
+    update_packages: true
+    install_cask: true
+    add_to_path: true
+    global_packages:
+      - wget # File downloader
+      - jq # JSON processor
+      - tree # Directory tree viewer
+      - htop # Process viewer
+      - ffmpeg # Media processing tools
