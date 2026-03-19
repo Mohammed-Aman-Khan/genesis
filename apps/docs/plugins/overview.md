@@ -8,31 +8,46 @@ Genesis uses a plugin-based architecture to support different tools, languages, 
 
 Development tools and utilities:
 
-| Plugin                        | Description                      | Platforms             | Status    |
-| ----------------------------- | -------------------------------- | --------------------- | --------- |
-| [Node.js](/plugins/node)      | Node.js runtime with NVM support | macOS, Linux, Windows | ✅ Stable |
-| [Git](/plugins/git)           | Git version control system       | macOS, Linux, Windows | ✅ Stable |
-| [Docker](/plugins/docker)     | Docker containerization platform | macOS, Linux, Windows | ✅ Stable |
-| [Homebrew](/plugins/homebrew) | Package manager for macOS        | macOS                 | ✅ Stable |
+| Plugin                              | Description                       | Platforms             | Status     |
+| ----------------------------------- | --------------------------------- | --------------------- | ---------- |
+| [Node.js](/plugins/node)            | Node.js runtime with NVM support  | macOS, Linux, Windows | ✅ Stable  |
+| [Git](/plugins/git)                 | Git version control system        | macOS, Linux, Windows | ✅ Stable  |
+| [Docker](/plugins/docker)           | Docker containerization platform  | macOS, Linux, Windows | ✅ Stable  |
+| [Homebrew](/plugins/homebrew)       | Package manager for macOS         | macOS                 | ✅ Stable  |
+| [Bun](/plugins/bun)                 | Fast JavaScript runtime           | macOS, Linux, Windows | 🚧 Planned |
+| [Deno](/plugins/deno)               | Secure JavaScript runtime         | macOS, Linux, Windows | 🚧 Planned |
+| [pnpm](/plugins/pnpm)               | Fast package manager              | macOS, Linux, Windows | 🚧 Planned |
+| [Yarn](/plugins/yarn)               | Package manager for Node.js       | macOS, Linux, Windows | 🚧 Planned |
+| [Android SDK](/plugins/android-sdk) | Android development tools         | macOS, Linux, Windows | 🚧 Planned |
+| [Expo](/plugins/expo)               | React Native development platform | macOS, Linux, Windows | 🚧 Planned |
+| [PostgreSQL](/plugins/postgresql)   | PostgreSQL database server        | macOS, Linux, Windows | 🚧 Planned |
+| [Redis](/plugins/redis)             | Redis in-memory data store        | macOS, Linux, Windows | 🚧 Planned |
+| [MongoDB](/plugins/mongodb)         | MongoDB database server           | macOS, Linux, Windows | 🚧 Planned |
 
 ### Languages
 
 Programming language runtimes:
 
-| Plugin                    | Description                               | Platforms             | Status    |
-| ------------------------- | ----------------------------------------- | --------------------- | --------- |
-| [Python](/plugins/python) | Python runtime via system package manager | macOS, Linux, Windows | ✅ Stable |
-| [Java](/plugins/java)     | Java Development Kit (JDK)                | macOS, Linux, Windows | ✅ Stable |
-| [Go](/plugins/go)         | Go programming language                   | macOS, Linux, Windows | ✅ Stable |
+| Plugin                    | Description                               | Platforms             | Status     |
+| ------------------------- | ----------------------------------------- | --------------------- | ---------- |
+| [Python](/plugins/python) | Python runtime via system package manager | macOS, Linux, Windows | ✅ Stable  |
+| [Java](/plugins/java)     | Java Development Kit (JDK)                | macOS, Linux, Windows | ✅ Stable  |
+| [Go](/plugins/go)         | Go programming language                   | macOS, Linux, Windows | ✅ Stable  |
+| [Rust](/plugins/rust)     | Rust programming language                 | macOS, Linux, Windows | 🚧 Planned |
+| [C++](/plugins/cpp)       | C++ programming language                  | macOS, Linux, Windows | 🚧 Planned |
+| [Swift](/plugins/swift)   | Swift programming language                | macOS                 | 🚧 Planned |
 
 ### SDKs
 
 Software development kits (coming soon):
 
-| Plugin           | Description         | Platforms | Status     |
-| ---------------- | ------------------- | --------- | ---------- |
-| AWS SDK          | AWS CLI and SDKs    | All       | 🚧 Planned |
-| Google Cloud SDK | gcloud CLI and SDKs | All       | 🚧 Planned |
+| Plugin         | Description                           | Platforms | Status     |
+| -------------- | ------------------------------------- | --------- | ---------- |
+| Docker Compose | Multi-container Docker apps           | All       | 🚧 Planned |
+| Nginx          | Web server and reverse proxy          | All       | 🚧 Planned |
+| FFmpeg         | Multimedia processing tools           | All       | 🚧 Planned |
+| Grafana        | Monitoring and visualization platform | All       | 🚧 Planned |
+| Prometheus     | Monitoring and alerting toolkit       | All       | 🚧 Planned |
 
 ## Plugin Features
 
@@ -220,31 +235,6 @@ export default defineConfig({
 });
 ```
 
-## Plugin Options
-
-Each plugin has its own configuration options:
-
-### Node.js Plugin
-
-```typescript
-interface NodeOptions {
-  version: string; // Required: Node.js version
-  use_nvm?: boolean; // Optional: Use NVM (default: true)
-}
-```
-
-[Full Node.js documentation →](/plugins/node)
-
-### Python Plugin
-
-```typescript
-interface PythonOptions {
-  version: string; // Required: Python version
-}
-```
-
-[Full Python documentation →](/plugins/python)
-
 ## Creating Custom Plugins
 
 Want to create your own plugin? Check out:
@@ -295,8 +285,18 @@ Need a custom plugin for your organization? [Contact us](https://github.com/Moha
 
 Explore specific plugins:
 
+### Tools
+
 - [Node.js Plugin](/plugins/node) - Install Node.js with NVM
+- [Git Plugin](/plugins/git) - Install Git version control
+- [Docker Plugin](/plugins/docker) - Install Docker containerization
+- [Homebrew Plugin](/plugins/homebrew) - Install macOS package manager
+
+### Languages
+
 - [Python Plugin](/plugins/python) - Install Python runtime
+- [Java Plugin](/plugins/java) - Install Java Development Kit
+- [Go Plugin](/plugins/go) - Install Go programming language
 
 Or learn to create your own:
 
