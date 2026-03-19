@@ -8,26 +8,31 @@ Genesis uses a plugin-based architecture to support different tools, languages, 
 
 Development tools and utilities:
 
-| Plugin | Description | Platforms | Status |
-|--------|-------------|-----------|--------|
-| [Node.js](/plugins/node) | Node.js runtime with NVM support | macOS, Linux, Windows | ✅ Stable |
+| Plugin                        | Description                      | Platforms             | Status    |
+| ----------------------------- | -------------------------------- | --------------------- | --------- |
+| [Node.js](/plugins/node)      | Node.js runtime with NVM support | macOS, Linux, Windows | ✅ Stable |
+| [Git](/plugins/git)           | Git version control system       | macOS, Linux, Windows | ✅ Stable |
+| [Docker](/plugins/docker)     | Docker containerization platform | macOS, Linux, Windows | ✅ Stable |
+| [Homebrew](/plugins/homebrew) | Package manager for macOS        | macOS                 | ✅ Stable |
 
 ### Languages
 
 Programming language runtimes:
 
-| Plugin | Description | Platforms | Status |
-|--------|-------------|-----------|--------|
+| Plugin                    | Description                               | Platforms             | Status    |
+| ------------------------- | ----------------------------------------- | --------------------- | --------- |
 | [Python](/plugins/python) | Python runtime via system package manager | macOS, Linux, Windows | ✅ Stable |
+| [Java](/plugins/java)     | Java Development Kit (JDK)                | macOS, Linux, Windows | ✅ Stable |
+| [Go](/plugins/go)         | Go programming language                   | macOS, Linux, Windows | ✅ Stable |
 
 ### SDKs
 
 Software development kits (coming soon):
 
-| Plugin | Description | Platforms | Status |
-|--------|-------------|-----------|--------|
-| AWS SDK | AWS CLI and SDKs | All | 🚧 Planned |
-| Google Cloud SDK | gcloud CLI and SDKs | All | 🚧 Planned |
+| Plugin           | Description         | Platforms | Status     |
+| ---------------- | ------------------- | --------- | ---------- |
+| AWS SDK          | AWS CLI and SDKs    | All       | 🚧 Planned |
+| Google Cloud SDK | gcloud CLI and SDKs | All       | 🚧 Planned |
 
 ## Plugin Features
 
@@ -223,8 +228,8 @@ Each plugin has its own configuration options:
 
 ```typescript
 interface NodeOptions {
-  version: string;      // Required: Node.js version
-  use_nvm?: boolean;    // Optional: Use NVM (default: true)
+  version: string; // Required: Node.js version
+  use_nvm?: boolean; // Optional: Use NVM (default: true)
 }
 ```
 
@@ -234,7 +239,7 @@ interface NodeOptions {
 
 ```typescript
 interface PythonOptions {
-  version: string;      // Required: Python version
+  version: string; // Required: Python version
 }
 ```
 
@@ -253,6 +258,7 @@ Want to create your own plugin? Check out:
 ### Official Plugins
 
 Maintained by the Genesis team:
+
 - ✅ Node.js
 - ✅ Python
 - 🚧 More coming soon
@@ -297,4 +303,3 @@ Or learn to create your own:
 - [Plugin Development](/guide/plugin-development) - Build custom plugins
 - [Plugin Lifecycle](/plugins/lifecycle) - Understand the plugin lifecycle
 - [Best Practices](/plugins/best-practices) - Plugin development best practices
-

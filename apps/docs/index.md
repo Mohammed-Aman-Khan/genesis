@@ -112,15 +112,42 @@ genesis apply
 
 ```typescript [genesis.config.ts]
 import { defineConfig } from "@genesis/core";
-import { node, python, git } from "@genesis/plugins";
+import {
+  node,
+  python,
+  git,
+  java,
+  go,
+  docker,
+  homebrew,
+} from "@genesis/plugins";
 
 export default defineConfig({
   tools: [
     node({ version: "20", use_nvm: true }),
     python({ version: "3.11" }),
     git({
-      user_name: "Your Name",
-      user_email: "you@company.com",
+      version: "latest",
+      install_method: "package",
+    }),
+    docker({
+      version: "latest",
+      include_compose: true,
+      install_desktop: false,
+    }),
+    homebrew({
+      update_packages: true,
+      install_cask: true,
+      add_to_path: true,
+    }),
+  ],
+  languages: [
+    java({
+      version: "17",
+      distribution: "openjdk",
+    }),
+    go({
+      version: "1.21",
     }),
   ],
   repositories: [
@@ -145,8 +172,23 @@ tools:
   - type: python
     version: "3.11"
   - type: git
-    user_name: "Your Name"
-    user_email: "you@company.com"
+    version: "latest"
+    install_method: "package"
+  - type: docker
+    version: "latest"
+    include_compose: true
+    install_desktop: false
+  - type: homebrew
+    update_packages: true
+    install_cask: true
+    add_to_path: true
+
+languages:
+  - type: java
+    version: "17"
+    distribution: "openjdk"
+  - type: go
+    version: "1.21"
 
 repositories:
   - url: https://github.com/your-org/backend
