@@ -17,10 +17,30 @@
     "./python": {
       "import": "./dist/plugins/python/index.js",
       "types": "./dist/plugins/python/index.d.ts"
+    },
+    "./java": {
+      "import": "./dist/plugins/java/index.js",
+      "types": "./dist/plugins/java/index.d.ts"
+    },
+    "./go": {
+      "import": "./dist/plugins/go/index.js",
+      "types": "./dist/plugins/go/index.d.ts"
+    },
+    "./git": {
+      "import": "./dist/plugins/git/index.js",
+      "types": "./dist/plugins/git/index.d.ts"
+    },
+    "./docker": {
+      "import": "./dist/plugins/docker/index.js",
+      "types": "./dist/plugins/docker/index.d.ts"
+    },
+    "./homebrew": {
+      "import": "./dist/plugins/homebrew/index.js",
+      "types": "./dist/plugins/homebrew/index.d.ts"
     }
   },
   "scripts": {
-    "build": "tsup src/index.ts src/plugins/node/index.ts src/plugins/python/index.ts --dts --format esm --minify",
+    "build": "tsup src/index.ts src/plugins/node/index.ts src/plugins/python/index.ts src/plugins/java/index.ts src/plugins/go/index.ts src/plugins/git/index.ts src/plugins/docker/index.ts src/plugins/homebrew/index.ts --dts --format esm --minify",
     "clean": "rm -rf dist",
     "lint": "eslint src --ext .ts",
     "test": "vitest"
