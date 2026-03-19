@@ -58,6 +58,7 @@ yarn add @genesis/plugins
 Install and manage Node.js runtime.
 
 **Features:**
+
 - NVM installation (default, recommended)
 - Standalone installation (optional)
 - Cross-platform support (macOS, Linux, Windows)
@@ -73,7 +74,7 @@ export default defineConfig({
   tools: [
     node({
       version: "20",
-      use_nvm: true,  // Default: true
+      use_nvm: true, // Default: true
     }),
   ],
 });
@@ -83,10 +84,11 @@ export default defineConfig({
 tools:
   - type: node
     version: "20"
-    use_nvm: true  # Default: true
+    use_nvm: true # Default: true
 ```
 
 **Options:**
+
 - `version` (string, required): Node.js version to install (e.g., "20", "18.16.0")
 - `use_nvm` (boolean, optional): Use NVM for installation (default: `true`)
 
@@ -94,10 +96,279 @@ tools:
 
 ---
 
+#### [Git](./src/plugins/git/README.md)
+
+Install and manage Git version control system.
+
+**Features:**
+
+- Multiple installation methods (package, source, binary)
+- Cross-platform support (macOS, Linux, Windows)
+- Version management
+- Default configuration setup
+- Task deduplication
+
+**Usage:**
+
+```typescript
+import { git } from "@genesis/plugins";
+
+export default defineConfig({
+  tools: [
+    git({
+      version: "latest",
+      install_method: "package",
+    }),
+  ],
+});
+```
+
+```yaml
+tools:
+  - type: git
+    version: "latest"
+    install_method: "package"
+```
+
+**Options:**
+
+- `version` (string, optional): Git version to install (e.g., "2.40.0", "latest", default: "latest")
+- `install_method` (string, optional): Installation method ("package", "source", "binary", default: "package")
+
+**See [Git Plugin Documentation](./src/plugins/git/README.md) for details.**
+
+---
+
+#### [Docker](./src/plugins/docker/README.md)
+
+Install and manage Docker containerization platform.
+
+**Features:**
+
+- Docker Engine or Docker Desktop installation
+- Cross-platform support (macOS, Linux, Windows)
+- Docker Compose integration
+- Platform-specific optimizations
+- Verification testing
+
+**Usage:**
+
+```typescript
+import { docker } from "@genesis/plugins";
+
+export default defineConfig({
+  tools: [
+    docker({
+      version: "latest",
+      include_compose: true,
+      install_desktop: false,
+    }),
+  ],
+});
+```
+
+```yaml
+tools:
+  - type: docker
+    version: "latest"
+    include_compose: true
+    install_desktop: false
+```
+
+**Options:**
+
+- `version` (string, optional): Docker version to install (e.g., "24.0.0", "latest", default: "latest")
+- `include_compose` (boolean, optional): Install Docker Compose (default: true)
+- `install_desktop` (boolean, optional): Install Docker Desktop on macOS/Windows (default: false)
+
+**See [Docker Plugin Documentation](./src/plugins/docker/README.md) for details.**
+
+---
+
+#### [Homebrew](./src/plugins/homebrew/README.md)
+
+Install and manage Homebrew package manager (macOS only).
+
+**Features:**
+
+- macOS native support
+- Apple Silicon and Intel Mac support
+- Automatic updates
+- Cask support for GUI applications
+- PATH configuration
+
+**Usage:**
+
+```typescript
+import { homebrew } from "@genesis/plugins";
+
+export default defineConfig({
+  tools: [
+    homebrew({
+      update_packages: true,
+      install_cask: true,
+      add_to_path: true,
+    }),
+  ],
+});
+```
+
+```yaml
+tools:
+  - type: homebrew
+    update_packages: true
+    install_cask: true
+    add_to_path: true
+```
+
+**Options:**
+
+- `update_packages` (boolean, optional): Update installed packages (default: true)
+- `install_cask` (boolean, optional): Include Homebrew Cask (default: true)
+- `add_to_path` (boolean, optional): Add Homebrew to PATH (default: true)
+
+**See [Homebrew Plugin Documentation](./src/plugins/homebrew/README.md) for details.**
+
+---
+
 ### SDKs
 
 Coming soon:
-- Java JDK
+
+- .NET SDK
+- Android SDK
+- iOS SDK
+
+---
+
+### Languages
+
+#### [Python](./src/plugins/python/README.md)
+
+Install and manage Python runtime.
+
+**Features:**
+
+- System package manager installation
+- Cross-platform support (macOS, Linux, Windows)
+- Automatic version management
+- Task deduplication
+
+**Usage:**
+
+```typescript
+import { python } from "@genesis/plugins";
+
+export default defineConfig({
+  languages: [
+    python({
+      version: "3.11",
+    }),
+  ],
+});
+```
+
+```yaml
+languages:
+  - type: python
+    version: "3.11"
+```
+
+**Options:**
+
+- `version` (string, required): Python version to install (e.g., "3.11", "3.10")
+
+**See [Python Plugin Documentation](./src/plugins/python/README.md) for details.**
+
+---
+
+#### [Java](./src/plugins/java/README.md)
+
+Install and manage Java Development Kit (JDK).
+
+**Features:**
+
+- OpenJDK and Oracle JDK support
+- Cross-platform support (macOS, Linux, Windows)
+- Version management (8, 11, 17, 21, etc.)
+- Environment setup (JAVA_HOME, PATH)
+- Archive-based installation
+
+**Usage:**
+
+```typescript
+import { java } from "@genesis/plugins";
+
+export default defineConfig({
+  languages: [
+    java({
+      version: "17",
+      distribution: "openjdk",
+    }),
+  ],
+});
+```
+
+```yaml
+languages:
+  - type: java
+    version: "17"
+    distribution: "openjdk"
+```
+
+**Options:**
+
+- `version` (string, required): Java version to install (e.g., "8", "11", "17", "21")
+- `distribution` (string, optional): Distribution type ("openjdk" or "oracle", default: "openjdk")
+
+**See [Java Plugin Documentation](./src/plugins/java/README.md) for details.**
+
+---
+
+#### [Go](./src/plugins/go/README.md)
+
+Install and manage Go programming language.
+
+**Features:**
+
+- Official Go distribution downloads
+- Cross-platform support (macOS, Linux, Windows)
+- Version management
+- Environment setup (PATH)
+- Clean installation process
+
+**Usage:**
+
+```typescript
+import { go } from "@genesis/plugins";
+
+export default defineConfig({
+  languages: [
+    go({
+      version: "1.21",
+    }),
+  ],
+});
+```
+
+```yaml
+languages:
+  - type: go
+    version: "1.21"
+```
+
+**Options:**
+
+- `version` (string, required): Go version to install (e.g., "1.19", "1.20", "1.21", "1.22")
+
+**See [Go Plugin Documentation](./src/plugins/go/README.md) for details.**
+
+---
+
+Coming soon:
+
+- Rust
+- Ruby
 - .NET SDK
 - Android SDK
 - iOS SDK
@@ -111,6 +382,7 @@ Coming soon:
 Install and manage Python runtime.
 
 **Features:**
+
 - System package manager installation
 - Cross-platform support (macOS, Linux, Windows)
 - Automatic version management
@@ -137,11 +409,13 @@ languages:
 ```
 
 **Options:**
+
 - `version` (string, required): Python version to install (e.g., "3.11", "3.10")
 
 ---
 
 Coming soon:
+
 - Go
 - Rust
 - Ruby
@@ -161,7 +435,7 @@ interface GenesisPlugin<TOptions = unknown> {
   dependsOn?: string[];
 
   detect?(runtime: PluginRuntime<TOptions>): Promise<DetectResult>;
-  registerTasks?(runtime: PluginRuntime<TOptions>): Promise<void>;  // NEW!
+  registerTasks?(runtime: PluginRuntime<TOptions>): Promise<void>; // NEW!
   apply?(runtime: PluginRuntime<TOptions>): Promise<ApplyResult>;
   validate?(runtime: PluginRuntime<TOptions>): Promise<ValidateResult>;
 }
@@ -172,22 +446,26 @@ interface GenesisPlugin<TOptions = unknown> {
 Genesis uses a three-phase execution model to eliminate redundant system operations:
 
 #### Phase 1: Task Registration (`registerTasks`)
+
 - Plugins register system-level prerequisites
 - Tasks are collected but not executed yet
 - Example: Register `apt-get update`, `apt-get install curl`
 
 #### Phase 2: Task Execution
+
 - Task registry executes all registered tasks
 - **Automatic deduplication** - each task runs only once
 - Tasks execute in dependency order
 - Example: `apt-get update` runs once, then `curl` and `python3` install
 
 #### Phase 3: Plugin Installation (`apply`)
+
 - Plugins perform their specific installation work
 - System dependencies are guaranteed to be available
 - Example: NVM installation using curl (which is now installed)
 
 **Benefits:**
+
 - **50% fewer package manager updates** - `apt-get update` runs once, not per plugin
 - **Guaranteed dependencies** - System packages available when plugins need them
 - **Better performance** - No redundant operations
@@ -216,7 +494,7 @@ interface GenesisPluginContext {
   cwd: string;
   env: NodeJS.ProcessEnv;
   logger: Logger;
-  taskRegistry: TaskRegistry;  // NEW! For task deduplication
+  taskRegistry: TaskRegistry; // NEW! For task deduplication
 }
 ```
 
@@ -255,7 +533,9 @@ export interface MyToolOptions {
   // Add your options here
 }
 
-export function myTool(options: MyToolOptions): GenesisPluginInstance<MyToolOptions> {
+export function myTool(
+  options: MyToolOptions,
+): GenesisPluginInstance<MyToolOptions> {
   return {
     id: "my-tool",
     category: "tool",
@@ -265,7 +545,7 @@ export function myTool(options: MyToolOptions): GenesisPluginInstance<MyToolOpti
 }
 
 export function createPlugin(
-  instance: GenesisPluginInstance<MyToolOptions>
+  instance: GenesisPluginInstance<MyToolOptions>,
 ): GenesisPlugin<MyToolOptions> {
   return {
     id: instance.id,
@@ -320,17 +600,17 @@ export function createPlugin(
       taskRegistry.register(
         createPackageManagerUpdateTask(
           runtime.context.cwd,
-          runtime.context.env
-        )
+          runtime.context.env,
+        ),
       );
 
       // Register any system packages your tool needs
       taskRegistry.register(
         createPackageInstallTask(
-          "build-essential",  // Example dependency
+          "build-essential", // Example dependency
           runtime.context.cwd,
-          runtime.context.env
-        )
+          runtime.context.env,
+        ),
       );
     },
 
@@ -356,7 +636,9 @@ export function createPlugin(
       };
     },
 
-    async validate(runtime: PluginRuntime<MyToolOptions>): Promise<ValidateResult> {
+    async validate(
+      runtime: PluginRuntime<MyToolOptions>,
+    ): Promise<ValidateResult> {
       // Reuse detect logic
       return this.detect!(runtime);
     },
@@ -371,7 +653,10 @@ export const myToolPlugin = createPlugin;
 Add to `packages/plugins/src/index.ts`:
 
 ```typescript
-export { myTool, createPlugin as createMyToolPlugin } from "./plugins/my-tool/index.js";
+export {
+  myTool,
+  createPlugin as createMyToolPlugin,
+} from "./plugins/my-tool/index.js";
 export type { MyToolOptions } from "./plugins/my-tool/index.js";
 ```
 
@@ -401,6 +686,7 @@ Update build script in `packages/plugins/package.json`:
 ### 4. Create Plugin README
 
 Create `packages/plugins/src/plugins/my-tool/README.md` with:
+
 - Overview
 - Installation
 - Configuration options
@@ -472,12 +758,14 @@ We welcome new plugins! Please see the [main repository](../../README.md) for co
 ### Best Practices for Plugin Development
 
 **✅ Use `registerTasks()` for:**
+
 - Package manager operations (`apt update`, `brew update`)
 - System package installations (`apt install curl`)
 - Global tool installations that require system packages
 - Operations that might be needed by multiple plugins
 
 **✅ Use `apply()` for:**
+
 - User-space installations (NVM, pyenv, rbenv)
 - Configuration file modifications
 - Environment variable setup
