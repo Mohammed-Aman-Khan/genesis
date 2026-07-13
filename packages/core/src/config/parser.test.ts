@@ -3,9 +3,11 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 // ---- MOCKS (hoisted by vitest) ----
 // All variables referenced inside vi.mock factories must be hoisted
 
-const mockExistsSync = vi.fn();
-const mockReadFile = vi.fn();
-const mockYamlParse = vi.fn();
+const { mockExistsSync, mockReadFile, mockYamlParse } = vi.hoisted(() => ({
+  mockExistsSync: vi.fn(),
+  mockReadFile: vi.fn(),
+  mockYamlParse: vi.fn(),
+}));
 
 vi.mock('node:fs', () => ({
   default: {

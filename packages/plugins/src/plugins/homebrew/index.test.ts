@@ -1,14 +1,15 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // ── Mock variables ─────────────────────────────────────────────────
-const mockRunCommand = vi.fn();
-const mockGetPlatform = vi.fn(() => 'macos');
-const mockCreatePkgUpdateTask = vi.fn();
-const mockCreatePkgInstallTask = vi.fn();
-const mockCreateCmdCheckTask = vi.fn();
-const mockCreateCustomTask = vi.fn();
-
-const mockOsArch = vi.fn(() => 'arm64');
+const { mockRunCommand, mockGetPlatform, mockCreatePkgUpdateTask, mockCreatePkgInstallTask, mockCreateCmdCheckTask, mockCreateCustomTask, mockOsArch } = vi.hoisted(() => ({
+  mockRunCommand: vi.fn(),
+  mockGetPlatform: vi.fn(() => 'macos'),
+  mockCreatePkgUpdateTask: vi.fn(),
+  mockCreatePkgInstallTask: vi.fn(),
+  mockCreateCmdCheckTask: vi.fn(),
+  mockCreateCustomTask: vi.fn(),
+  mockOsArch: vi.fn(() => 'arm64'),
+}));
 
 // ── Module mocks ───────────────────────────────────────────────────
 vi.mock('@ossl/genesis-core', () => ({
