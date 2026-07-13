@@ -12,6 +12,7 @@
     "docs:preview": "vitepress preview apps/docs"
   },
   "devDependencies": {
+    "@types/node": "26.1.1",
     "turbo": "latest",
     "vitepress": "^2.0.0-alpha.14"
   },
