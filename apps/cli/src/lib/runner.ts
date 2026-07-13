@@ -6,13 +6,13 @@ import {
   runDiff as coreRunDiff,
   runValidate as coreRunValidate,
   runDetect as coreRunDetect,
+  loadConfig,
   Logger,
   TaskRegistry,
   type DetectSummary,
   type ApplySummary,
   type ValidateSummary,
 } from "@ossl/genesis-core";
-import { loadGenesisConfig } from "./config-loader.js";
 
 export interface RunnerContext {
   cwd: string;
@@ -54,7 +54,7 @@ function printTable(
 async function prepare(context: RunnerContext) {
   const logger = createLogger();
   logger.debug(`Loading config from ${context.cwd}`);
-  const config = await loadGenesisConfig(context.cwd);
+  const config = await loadConfig(context.cwd);
   const instances = collectPluginInstances(config);
   const nodes = await loadPlugins(instances);
   const graph = buildPluginGraph(nodes);
