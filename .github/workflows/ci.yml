@@ -1,0 +1,73 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: '1.3.2'
+      - run: bun install --frozen-lockfile
+      - run: bun run lint
+
+  test:
+    name: Test (Node ${{ matrix.node-version }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        node-version: ['18', '20', '22']
+        exclude:
+          # Reduce matrix size — test all Node versions on Linux, latest on others
+          - os: macos-latest
+            node-version: '18'
+          - os: macos-latest
+            node-version: '20'
+          - os: windows-latest
+            node-version: '18'
+          - os: windows-latest
+            node-version: '20'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: '1.3.2'
+      - run: bun install --frozen-lockfile
+      - run: bun run build
+      - run: bun run test
+
+  test-bun:
+    name: Test (Bun)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: '1.3.2'
+      - run: bun install --frozen-lockfile
+      - run: bun run build
+      - run: bun run test
+
+  security:
+    name: Security Audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: '1.3.2'
+      - run: bun audit
+        continue-on-error: true

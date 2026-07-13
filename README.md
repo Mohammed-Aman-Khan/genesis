@@ -1,5 +1,7 @@
 # Genesis
 
+[![CI](https://github.com/ossl-dev/genesis/actions/workflows/ci.yml/badge.svg)](https://github.com/ossl-dev/genesis/actions/workflows/ci.yml)
+
 > **Stop wasting hours setting up development environments. One command, done.**
 
 Ever spent your first day at a new job following a 20-step setup guide that doesn't work? Ever had a teammate say "it works on my machine"? Yeah, we've been there too.

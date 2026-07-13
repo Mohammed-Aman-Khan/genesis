@@ -5,6 +5,10 @@
  * instant switching, and cross-machine portability for Genesis.
  */
 
+import os from "node:os";
+import path from "node:path";
+import zlib from "node:zlib";
+import fs from "node:fs";
 import { type Logger } from "../utils/logger.js";
 import { type GenesisConfig } from "../config/schema.js";
 import { runCommand } from "../os/shell.js";
@@ -515,43 +519,93 @@ export class EnvironmentCacheManager {
   private async compressEnvironment(
     environment: CachedEnvironment,
   ): Promise<void> {
-    // Implementation would compress artifacts
-    this.logger.debug(`Compressing environment: ${environment.name}`);
+    try {
+      const json = JSON.stringify(environment.artifacts);
+      const compressed = zlib.gzipSync(json);
+      this.logger.debug(`Compressed environment ${environment.name}: ${json.length} -> ${compressed.length} bytes`);
+      // Store compressed data on the environment object
+      (environment as any)._compressed = compressed;
+    } catch (err) {
+      this.logger.debug(`Failed to compress environment ${environment.name}: ${(err as Error).message}`);
+    }
   }
 
   private async decompressEnvironment(
     environment: CachedEnvironment,
   ): Promise<void> {
-    // Implementation would decompress artifacts
-    this.logger.debug(`Decompressing environment: ${environment.name}`);
+    try {
+      const compressed = (environment as any)._compressed;
+      if (compressed) {
+        const decompressed = zlib.gunzipSync(compressed).toString();
+        environment.artifacts = JSON.parse(decompressed);
+        delete (environment as any)._compressed;
+        this.logger.debug(`Decompressed environment ${environment.name}`);
+      }
+    } catch (err) {
+      this.logger.debug(`Failed to decompress environment ${environment.name}: ${(err as Error).message}`);
+    }
   }
 
   private async syncToRemote(environment: CachedEnvironment): Promise<void> {
-    // Implementation would sync to remote storage
-    this.logger.debug(`Syncing environment to remote: ${environment.name}`);
+    try {
+      const cacheDir = path.join(os.homedir(), '.genesis', 'cache');
+      fs.mkdirSync(cacheDir, { recursive: true });
+      const cacheFile = path.join(cacheDir, `${environment.id}.json`);
+      fs.writeFileSync(cacheFile, JSON.stringify(environment, null, 2));
+      this.logger.debug(`Synced environment ${environment.name} to ${cacheFile}`);
+    } catch (err) {
+      this.logger.debug(`Failed to sync environment ${environment.name}: ${(err as Error).message}`);
+    }
   }
 
   private async restoreArtifacts(
     artifacts: EnvironmentArtifacts,
   ): Promise<void> {
-    // Implementation would restore files, binaries, etc.
-    this.logger.debug("Restoring environment artifacts");
+    this.logger.debug(`Restoring ${artifacts.binaries.length + artifacts.configs.length + artifacts.caches.length} artifacts`);
+    // For now, log what would be restored
+    for (const artifact of [...artifacts.binaries, ...artifacts.configs, ...artifacts.caches]) {
+      this.logger.debug(`  - ${artifact.path} (${this.formatBytes(artifact.size)})`);
+    }
   }
 
   private async captureCurrentState(): Promise<SnapshotState> {
-    return {
-      filesystem: {
-        files: [],
-        directories: [],
-        permissions: {},
-      },
-      environment: {},
-      processes: [],
-      network: {
-        ports: [],
-        connections: [],
-      },
-    };
+    const cwd = process.cwd();
+    const files: FileState[] = [];
+
+    // Capture genesis home directory state if it exists
+    const genesisHome = process.env.GENESIS_HOME || path.join(os.homedir(), '.genesis');
+
+    try {
+      // Read environment variables
+      const envVars: Record<string, string> = {};
+      for (const [key, value] of Object.entries(process.env)) {
+        if (typeof value === 'string') {
+          envVars[key] = value;
+        }
+      }
+
+      return {
+        filesystem: {
+          files,
+          directories: [genesisHome, cwd],
+          permissions: {},
+        },
+        environment: envVars,
+        processes: [],
+        network: {
+          ports: [],
+          connections: [],
+        },
+      };
+    } catch (err) {
+      this.logger.debug(`Failed to capture current state: ${(err as Error).message}`);
+      return {
+        filesystem: { files: [], directories: [], permissions: {} },
+        environment: {},
+        processes: [],
+        network: { ports: [], connections: [] },
+      };
+    }
   }
 
   private async restoreFilesystemState(

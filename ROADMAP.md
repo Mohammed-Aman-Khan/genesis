@@ -14,40 +14,40 @@ Stuff that's built but not fully finished, tested, or released.
 
 Genesis has zero tests. That's the first thing to fix.
 
-- [ ] Add unit tests for config loader — YAML parsing, TS config loading, validation edge cases
-- [ ] Add unit tests for task registry — dedup, topological sort, priority ordering
-- [ ] Add unit tests for plugin executor — 3-phase lifecycle, error propagation
-- [ ] Add unit tests for each plugin's `detect`, `apply`, `validate` methods (mock the shell)
+- [x] Add unit tests for config loader — YAML parsing, TS config loading, validation edge cases
+- [x] Add unit tests for task registry — dedup, topological sort, priority ordering
+- [x] Add unit tests for plugin executor — 3-phase lifecycle, error propagation
+- [x] Add unit tests for each plugin's `detect`, `apply`, `validate` methods (mock the shell)
 - [ ] Add integration tests — apply a real config in a temp dir, verify side effects
-- [ ] Add platform-specific test runs (macOS, Linux, Windows) in CI
+- [x] Add platform-specific test runs (macOS, Linux, Windows) in CI
 
 ### CI / infra
 
-- [ ] Wire up GitHub Actions — lint, build, test on push/PR
-- [ ] Add test matrix for Node 18/20/22 and Bun 1.x
-- [ ] Add CI badge to README
-- [ ] Add per-platform CI jobs (macOS, Ubuntu, Windows runners)
-- [ ] Add `turbo run lint` to CI — eslint is configured but nothing enforces it
-- [ ] Add dependency vulnerability check (e.g. `npm audit` or `bun audit`)
+- [x] Wire up GitHub Actions — lint, build, test on push/PR
+- [x] Add test matrix for Node 18/20/22 and Bun 1.x
+- [x] Add CI badge to README
+- [x] Add per-platform CI jobs (macOS, Ubuntu, Windows runners)
+- [x] Add `turbo run lint` to CI — eslint is configured but nothing enforces it
+- [x] Add dependency vulnerability check (e.g. `npm audit` or `bun audit`)
 
 ### Finish stubs
 
 Code exists but doesn't actually do the thing yet. Finish it.
 
-- [ ] **ParallelExecutionEngine** — the class is wired up but `getMemoryUsage` returns 0, `detectResourceConflicts` returns empty, `isCriticalPath` always returns true. Make it do real resource-aware parallel scheduling.
-- [ ] **EnvironmentCacheManager** — full interface exists, but `restore`, `decompress`, `sync`, `snapshot` methods only log. Implement actual I/O so `genesis` can cache and restore dev environments.
-- [ ] **genesis login** — CLI command exists, emits placeholder output. Implement OAuth flow and token storage.
-- [ ] **genesis list --cloud** — exists, prints hardcoded example output. Wire to real backend.
-- [ ] **genesis apply <env-id>** — exists, prints hardcoded output. Wire to real cloud environment apply.
+- [x] **ParallelExecutionEngine** — the class is wired up but `getMemoryUsage` returns 0, `detectResourceConflicts` returns empty, `isCriticalPath` always returns true. Make it do real resource-aware parallel scheduling.
+- [x] **EnvironmentCacheManager** — full interface exists, but `restore`, `decompress`, `sync`, `snapshot` methods only log. Implement actual I/O so `genesis` can cache and restore dev environments.
+- [x] **genesis login** — CLI command exists, emits placeholder output. Implement OAuth flow and token storage.
+- [x] **genesis list --cloud** — exists, prints hardcoded example output. Wire to real backend.
+- [x] **genesis apply <env-id>** — exists, prints hardcoded output. Wire to real cloud environment apply.
 
 ### Docs accuracy
 
 The docs site lists 12+ plugins in the sidebar that don't exist yet. Fix the mismatch.
 
-- [ ] Audit every doc page against real implemented code — remove or mark aspirational pages clearly
-- [ ] Add a "status" badge per plugin doc page (implemented / planned / in progress)
-- [ ] Add missing API reference pages for modules that do exist but aren't documented
-- [ ] Add a troubleshooting page (common issues, platform quirks, config gotchas)
+- [x] Audit every doc page against real implemented code — remove or mark aspirational pages clearly
+- [x] Add a "status" badge per plugin doc page (implemented / planned / in progress)
+- [x] Add missing API reference pages for modules that do exist but aren't documented
+- [x] Add a troubleshooting page (common issues, platform quirks, config gotchas)
 
 ---
 

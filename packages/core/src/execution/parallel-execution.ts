@@ -6,10 +6,6 @@
  */
 
 import { type Logger } from "../utils/logger.js";
-import {
-  type GenesisPluginInstance,
-  type GenesisPluginCategory,
-} from "../config/schema.js";
 import { type PluginExecutionNode } from "../plugins/loader.js";
 import { type GenesisPluginContext } from "../plugins/types.js";
 
@@ -352,7 +348,7 @@ export class ParallelExecutionEngine {
       }
 
       // Wait for at least one plugin to complete and get the result
-      const { promise, plugin, result } = await Promise.race(
+      const { promise, result } = await Promise.race(
         executing.map(async (item) => {
           const result = await item.promise;
           return { promise: item.promise, plugin: item.plugin, result };
@@ -468,38 +464,66 @@ export class ParallelExecutionEngine {
   }
 
   private detectResourceConflicts(plugins: PluginExecutionNode[]): string[] {
-    // Simplified conflict detection
     const conflicts: string[] = [];
-
-    // Check for file system conflicts
     const paths = new Set<string>();
+    const seenPaths = new Map<string, string>();
+
     for (const plugin of plugins) {
-      // Would analyze plugin options for path conflicts
       const pluginPaths = this.getPluginPaths(plugin);
-      for (const path of pluginPaths) {
-        if (paths.has(path)) {
-          conflicts.push(`Path conflict: ${path}`);
+      for (const p of pluginPaths) {
+        if (seenPaths.has(p)) {
+          conflicts.push(`Path conflict on ${p}: ${plugin.instance.id} vs ${seenPaths.get(p)}`);
+        } else {
+          seenPaths.set(p, plugin.instance.id);
         }
-        paths.add(path);
+      }
+
+      // Check for port conflicts in options
+      const opts = plugin.instance.options as Record<string, unknown> | undefined;
+      if (opts?.port) {
+        const portKey = `port:${opts.port}`;
+        if (paths.has(portKey)) {
+          conflicts.push(`Port conflict on ${opts.port}: ${plugin.instance.id}`);
+        }
+        paths.add(portKey);
       }
     }
-
     return conflicts;
   }
 
   private getPluginPaths(plugin: PluginExecutionNode): string[] {
-    // Extract paths from plugin options (simplified)
-    return [];
+    const paths: string[] = [];
+    const opts = plugin.instance.options as Record<string, unknown> | undefined;
+    if (!opts) return paths;
+
+    // Common path-related option keys
+    const pathKeys = ['path', 'install_dir', 'home', 'prefix', 'target', 'destination', 'output_dir', 'cache_dir'];
+    for (const key of pathKeys) {
+      const val = opts[key];
+      if (typeof val === 'string') paths.push(val);
+    }
+
+    return paths;
   }
 
   private isCriticalPath(plugin: PluginExecutionNode): boolean {
-    // Determine if plugin is on critical path (has many dependents)
-    return true; // Simplified
+    // A plugin is critical if it has dependents (other plugins depend on it)
+    if (plugin.plugin.dependsOn && plugin.plugin.dependsOn.length > 0) {
+      // If others depend on this, check if any of them are in the current set
+      // For now, consider plugins with dependencies as critical
+      return true;
+    }
+    // Core tools (git, homebrew, node) are always critical path
+    const corePlugins = ['git', 'homebrew', 'node', 'docker', 'python'];
+    return corePlugins.includes(plugin.instance.id);
   }
 
   private getMemoryUsage(): number {
-    // Get current memory usage (simplified)
-    return 0;
+    try {
+      return (globalThis as any).process?.memoryUsage?.().heapUsed ?? 0;
+    } catch {
+      return 0;
+    }
   }
 
   private estimateSequentialExecutionTime(pluginCount: number): number {
@@ -589,7 +613,7 @@ export class ParallelExecutionEngine {
 
   private estimateOptimizationImprovement(
     plan: ParallelExecutionPlan,
-    performance: Map<string, PluginMetrics>,
+    _performance: Map<string, PluginMetrics>,
   ): number {
     // Calculate expected improvement based on historical data
     const totalTime = plan.estimatedTime;
