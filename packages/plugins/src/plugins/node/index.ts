@@ -127,7 +127,7 @@ async function installNvm(
   // Download and run the install script (curl should be available from registerTasks phase)
   const result = await runCommand(
     "bash",
-    ["-c", `curl -o- ${installUrl} | bash`],
+    ["-c", `set -o pipefail; curl -o- ${installUrl} | bash`],
     {
       cwd: runtime.context.cwd,
       env: runtime.context.env,

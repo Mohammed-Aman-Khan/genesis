@@ -44,7 +44,7 @@ async function detectPython(runtime: PluginRuntime<PythonOptions>) {
     };
   }
 
-  const version = parsePythonVersion(result.stdout || result.stderr);
+  const version = parsePythonVersion(result.stdout) || parsePythonVersion(result.stderr);
   if (!version) {
     return {
       ok: false,

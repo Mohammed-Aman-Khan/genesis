@@ -189,8 +189,12 @@ async function installGitFromBinary(
   const platformSuffix = platformMap[platform] || "linux";
 
   // Use GitHub releases for Git binaries
+  const gitVersion =
+    runtime.options.version && runtime.options.version !== "latest"
+      ? runtime.options.version
+      : "2.43.0";
   const fileName = `git-${platformSuffix}-${archSuffix}.tar.gz`;
-  const downloadUrl = `https://github.com/git/git/releases/download/v2.43.0/${fileName}`;
+  const downloadUrl = `https://github.com/git/git/releases/download/v${gitVersion}/${fileName}`;
 
   try {
     // Download the binary

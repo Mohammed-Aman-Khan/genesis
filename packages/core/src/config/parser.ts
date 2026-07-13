@@ -29,6 +29,11 @@ const yamlPluginDefaults: Record<
 > = {
   node: { module: "@ossl/genesis-plugins/node", category: "tool" },
   python: { module: "@ossl/genesis-plugins/python", category: "language" },
+  go: { module: "@ossl/genesis-plugins/go", category: "language" },
+  docker: { module: "@ossl/genesis-plugins/docker", category: "tool" },
+  java: { module: "@ossl/genesis-plugins/java", category: "language" },
+  homebrew: { module: "@ossl/genesis-plugins/homebrew", category: "tool" },
+  git: { module: "@ossl/genesis-plugins/git", category: "tool" },
 };
 
 function yamlEntryToInstance(entry: YamlPluginEntry): GenesisPluginInstance {
@@ -52,17 +57,18 @@ function isGenesisConfigShape(value: unknown): boolean {
     return false;
   }
   const data = value as Record<string, unknown>;
-  const sections = ["tools", "sdks", "languages"];
-  for (const section of sections) {
+  let found = false;
+  for (const section of ["tools", "sdks", "languages"]) {
     const list = data[section];
     if (Array.isArray(list) && list.length > 0) {
+      found = true;
       const first = list[0] as Record<string, unknown>;
       if (!first.id || !first.module || !first.category) {
         return false;
       }
     }
   }
-  return true;
+  return found;
 }
 
 function normalizeYamlConfig(raw: unknown): GenesisConfig {

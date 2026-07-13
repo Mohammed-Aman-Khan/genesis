@@ -113,7 +113,7 @@ async function installJavaFromArchive(
     const majorVersion = getJavaMajorVersion(version);
     const archMap: Record<string, string> = {
       x64: "x64",
-      arm64: platform === "macos" ? "aarch64" : "arm64",
+      arm64: "aarch64",
     };
     const platformMap: Record<string, string> = {
       macos: "mac",

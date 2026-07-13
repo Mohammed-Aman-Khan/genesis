@@ -162,8 +162,13 @@ async function installDockerLinux(
       ];
 
       for (const cmd of commands) {
-        const [command, ...args] = cmd.split(" ");
-        const result = await runCommand(command, args);
+        const needsShell = cmd.includes("|") || cmd.includes(">");
+        const result = needsShell
+          ? await runCommand("bash", ["-c", cmd])
+          : await runCommand(...(() => {
+              const [command, ...args] = cmd.split(" ");
+              return [command, args] as [string, string[]];
+            })());
 
         if (result.code !== 0 && !cmd.includes("usermod")) {
           // usermod might fail if user is already in group, that's ok
@@ -235,8 +240,9 @@ async function installDockerMacOS(
 
     try {
       // Download Docker Desktop
+      const arch = os.arch() === "arm64" ? "arm64" : "amd64";
       const downloadUrl =
-        "https://desktop.docker.com/mac/main/amd64/Docker.dmg";
+        `https://desktop.docker.com/mac/main/${arch}/Docker.dmg`;
       const tempDir = os.tmpdir();
       const dmgPath = path.join(tempDir, "Docker.dmg");
 
